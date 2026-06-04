@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search Hub — Brynne Inglish</title>
+<style>
+  :root {
+    --bg: #FAFAF9;
+    --bg2: #F4F3F0;
+    --bg3: #ECEAE5;
+    --border: #E0DDD8;
+    --text: #1A1916;
+    --text2: #6B6860;
+    --text3: #9B9890;
+    --accent: #1A1916;
+    --green-bg: #EDFAED;
+    --green: #1B7E2A;
+    --red-bg: #FDEEED;
+    --red: #C0392B;
+    --yellow-bg: #FEF9E7;
+    --yellow: #9A7B00;
+    --blue-bg: #EBF3FE;
+    --blue: #1A5FAD;
+    --purple-bg: #F0EFFE;
+    --purple: #5B4FCB;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; background: white; }
+  .header-left h1 { font-size: 18px; font-weight: normal; letter-spacing: -0.3px; }
+  .header-left p { font-size: 13px; color: var(--text2); margin-top: 1px; font-family: 'Courier New', monospace; }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .tabs { display: flex; gap: 0; margin-bottom: 2rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; width: fit-content; background: white; }
+  .tab { padding: 8px 20px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--text2); font-family: 'Georgia', serif; transition: all 0.15s; border-right: 1px solid var(--border); }
+  .tab:last-child { border-right: none; }
+  .tab.active { background: var(--text); color: white; }
+  .tab:hover:not(.active) { background: var(--bg2); color: var(--text); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  textarea, input[type=text], select { width: 100%; padding: 9px 12px; font-size: 14px; font-family: 'Georgia', serif; border: 1px solid var(--border); border-radius: var(--radius); background: white; color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; }
+  textarea:focus, input:focus, select:focus { border-color: var(--text); }
+  .label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field { margin-bottom: 1.25rem; }
+  .btn { padding: 8px 18px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius); background: white; color: var(--text); cursor: pointer; font-family: 'Georgia', serif; transition: all 0.15s; }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: var(--text); color: white; border-color: var(--text); }
+  .btn-primary:hover { opacity: 0.8; background: var(--text); }
+  .btn-danger { color: var(--red); border-color: transparent; background: none; }
+  .btn-danger:hover { background: var(--red-bg); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 2rem; }
+  .stat { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; text-align: center; box-shadow: var(--shadow); }
+  .stat-num { font-size: 28px; font-weight: normal; color: var(--text); letter-spacing: -1px; }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-row { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 5px 14px; font-size: 12px; border: 1px solid var(--border); border-radius: 99px; background: white; color: var(--text2); cursor: pointer; font-family: 'Courier New', monospace; transition: all 0.15s; }
+  .filter-btn.active { background: var(--text); color: white; border-color: var(--text); }
+  .filter-btn:hover:not(.active) { background: var(--bg2); color: var(--text); }
+  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 0.75rem; box-shadow: var(--shadow); transition: box-shadow 0.15s; }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .card-title { font-size: 15px; color: var(--text); }
+  .card-sub { font-size: 12px; color: var(--text2); margin-top: 3px; font-family: 'Courier New', monospace; }
+  .card-notes { font-size: 13px; color: var(--text2); margin-top: 8px; line-height: 1.5; border-top: 1px solid var(--bg3); padding-top: 8px; }
+  .card-actions { display: flex; gap: 4px; margin-top: 8px; }
+  .badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-family: 'Courier New', monospace; font-weight: normal; }
+  .badge-applied { background: var(--blue-bg); color: var(--blue); }
+  .badge-rejected { background: var(--red-bg); color: var(--red); }
+  .badge-screening { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-interviewing { background: var(--green-bg); color: var(--green); }
+  .badge-offer { background: #E8F8E8; color: #1B6B1B; }
+  .badge-ghosted { background: var(--bg2); color: var(--text3); }
+  .badge-evaluating { background: var(--purple-bg); color: var(--purple); }
+  .badge-skipped { background: var(--bg2); color: var(--text3); }
+  .verdict { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-family: 'Courier New', monospace; }
+  .verdict.apply { background: var(--green-bg); color: var(--green); }
+  .verdict.skip { background: var(--red-bg); color: var(--red); }
+  .verdict.consider { background: var(--yellow-bg); color: var(--yellow); }
+  .empty { text-align: center; padding: 4rem 1rem; color: var(--text3); font-size: 14px; }
+  .info-box { background: var(--blue-bg); border: 1px solid #C5D9F5; border-radius: var(--radius); padding: 1rem 1.25rem; font-size: 13px; color: var(--blue); line-height: 1.6; margin-bottom: 1.25rem; }
+  .modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: white; border-radius: var(--radius-lg); padding: 1.75rem; width: 90%; max-width: 480px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal h3 { font-size: 17px; font-weight: normal; margin-bottom: 1.25rem; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+  .confirm-msg { font-size: 13px; color: var(--green); margin-top: 0.75rem; display: none; font-family: 'Courier New', monospace; }
+  .section-title { font-size: 11px; color: var(--text2); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 1rem; }
+  .eval-hint { background: var(--bg2); border-radius: var(--radius); padding: 1.25rem; font-size: 14px; color: var(--text2); line-height: 1.7; margin-top: 1rem; }
+  .eval-hint code { font-family: 'Courier New', monospace; background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--text); font-size: 13px; }
+  .comms-log { margin-top: 8px; }
+  .comms-entry { font-size: 12px; color: var(--text2); font-family: 'Courier New', monospace; padding: 4px 0; border-bottom: 1px solid var(--bg3); }
+  .comms-entry:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Job Search Hub</h1>
+    <p>Brynne Inglish — Product Operations</p>
+  </div>
+  <div style="font-size: 12px; color: var(--text3); font-family: 'Courier New', monospace;" id="last-saved"></div>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tracker', this)">Tracker</button>
+    <button class="tab" onclick="switchTab('add', this)">Add Role</button>
+    <button class="tab" onclick="switchTab('evaluate', this)">Evaluate JD</button>
+  </div>
+
+  <div id="tracker" class="panel active">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterRoles('all', this)">All</button>
+      <button class="filter-btn" onclick="filterRoles('applied', this)">Applied</button>
+      <button class="filter-btn" onclick="filterRoles('screening', this)">Screening</button>
+      <button class="filter-btn" onclick="filterRoles('interviewing', this)">Interviewing</button>
+      <button class="filter-btn" onclick="filterRoles('offer', this)">Offer</button>
+      <button class="filter-btn" onclick="filterRoles('rejected', this)">Rejected</button>
+      <button class="filter-btn" onclick="filterRoles('ghosted', this)">Ghosted</button>
+      <button class="filter-btn" onclick="filterRoles('evaluating', this)">Evaluating</button>
+      <button class="filter-btn" onclick="filterRoles('skipped', this)">Skipped</button>
+    </div>
+    <div id="roles-list"></div>
+  </div>
+
+  <div id="add" class="panel">
+    <p class="section-title">Add a new role</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="field">
+        <label class="label">Company</label>
+        <input type="text" id="add-company" placeholder="e.g. Monzo">
+      </div>
+      <div class="field">
+        <label class="label">Role title</label>
+        <input type="text" id="add-title" placeholder="e.g. Senior Product Operations Manager">
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+      <div class="field">
+        <label class="label">Status</label>
+        <select id="add-status">
+          <option value="evaluating">Evaluating</option>
+          <option value="applied">Applied</option>
+          <option value="screening">Screening</option>
+          <option value="interviewing">Interviewing</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+          <option value="ghosted">Ghosted</option>
+          <option value="skipped">Skipped</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label">Verdict</label>
+        <select id="add-verdict">
+          <option value="">— select —</option>
+          <option value="apply">Apply</option>
+          <option value="consider">Consider</option>
+          <option value="skip">Skip</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label">Salary range</label>
+        <input type="text" id="add-salary" placeholder="e.g. £70,000-£85,000">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Notes</label>
+      <textarea id="add-notes" rows="3" placeholder="Any notes, comms, or context..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="addRole()">Add role</button>
+    <p class="confirm-msg" id="add-confirm">Role added successfully.</p>
+  </div>
+
+  <div id="evaluate" class="panel">
+    <div class="info-box">
+      To evaluate a job description, copy it and paste it into your Claude conversation starting with <code>/jd-review</code>. Claude will analyse it against your profile and automatically add it to this tracker.
+    </div>
+    <div class="eval-hint">
+      <strong>How it works:</strong><br><br>
+      1. Find a job description you want to evaluate<br>
+      2. In Claude, type <code>/jd-review</code> followed by the full JD text<br>
+      3. Claude analyses it against your profile (salary expectations, work type preferences, domain fit, screening likelihood)<br>
+      4. The role is automatically added here with the verdict and assessment notes<br><br>
+      Your tracker data is stored in your browser's local storage and persists between sessions.
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <h3>Edit role</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="field">
+        <label class="label">Status</label>
+        <select id="edit-status"></select>
+      </div>
+      <div class="field">
+        <label class="label">Verdict</label>
+        <select id="edit-verdict">
+          <option value="">— none —</option>
+          <option value="apply">Apply</option>
+          <option value="consider">Consider</option>
+          <option value="skip">Skip</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Notes / comms log</label>
+      <textarea id="edit-notes" rows="4" placeholder="Add notes, interview feedback, comms history..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'brynne_job_hub_v1';
+let roles = [];
+let editingId = null;
+let currentFilter = 'all';
+
+const INITIAL_ROLES = [
+  { id: 1, company: 'Monzo', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'apply', salary: '£70,000-£90,000', notes: 'CV screen rejection under 24 hours. Strong fit on paper. Title gap likely the issue.' },
+  { id: 2, company: 'GoodHabitz', title: 'Product Operations Lead', status: 'rejected', verdict: 'apply', salary: '', notes: 'CV screen rejection. Best work type match of all roles reviewed. Greenfield mandate.' },
+  { id: 3, company: 'Sword Health', title: 'Product Operations Lead', status: 'applied', verdict: 'consider', salary: '€56k-€120k', notes: 'No response. Below level but passable screen. Tailored CV and cover letter submitted.' },
+  { id: 4, company: 'Preply', title: 'Senior Product Strategy & Operations Manager', status: 'applied', verdict: 'apply', salary: '', notes: 'No response. Strong fit. First hire mandate, CPO reporting line.' },
+  { id: 5, company: 'Bloom', title: 'Operational Lead, Systems & Delivery', status: 'applied', verdict: 'apply', salary: '', notes: 'No response. Strong fit. Submitted with 5 detailed application answers.' },
+  { id: 6, company: 'Unnamed FinTech', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '', notes: 'No response. Wallet/Business UK launch. Greenfield mandate, regulated environment.' },
+  { id: 7, company: 'Yonda', title: 'Operations Lead', status: 'ghosted', verdict: 'consider', salary: '£60k-£75k', notes: 'Had screening call, then silence. Chased recruiter twice, no response. Effectively dead.' },
+  { id: 8, company: 'Amex via CBTS', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '£40-50/hr inside IR35', notes: 'Contract role. Viewed on LinkedIn, no movement. Follow-up sent.' },
+  { id: 9, company: 'Curinos', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '£70,000', notes: 'No response. Lower priority. Process design work, financial services domain.' },
+  { id: 10, company: 'Sedgwick', title: 'Senior Product Operations Analyst', status: 'evaluating', verdict: 'consider', salary: '£70,000', notes: 'Consider applying. Good process design mandate. Insurance/claims domain.' },
+  { id: 11, company: 'Joko', title: 'Product Operations Lead', status: 'evaluating', verdict: 'apply', salary: '', notes: 'Strong fit. Founding mandate, COO reporting line. Paris HQ, remote friendly. Apply ASAP.' },
+  { id: 12, company: '9fin', title: 'Lead Technical Program Manager', status: 'evaluating', verdict: 'consider', salary: '', notes: 'Delivery-heavy but top-of-market comp. Cross-functional scope is real. Apply.' },
+  { id: 13, company: 'Spacelift', title: 'Product Operations Manager', status: 'evaluating', verdict: 'skip', salary: '', notes: 'SQL fluency required as core skill. DevOps domain. Skip unless SQL experience exists.' },
+  { id: 14, company: 'LSEG', title: 'Senior Manager, Product-Led Tooling', status: 'skipped', verdict: 'skip', salary: '', notes: 'Technical tooling depth gap. Enterprise programme management.' },
+  { id: 15, company: 'Applied Computing', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. Jira admin and sprint coordination only.' },
+  { id: 16, company: 'Wayve', title: 'Technical Operations', status: 'skipped', verdict: 'skip', salary: '', notes: 'Hard AV/robotics domain filter. Wrong profile.' },
+  { id: 17, company: 'Siemens Healthineers', title: 'Technical Product Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'CS/engineering background required.' },
+  { id: 18, company: 'LEGO', title: 'Tech Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. 60% delivery execution.' },
+  { id: 19, company: 'Checkout.com', title: 'Head of Process Architecture', status: 'skipped', verdict: 'skip', salary: '', notes: 'Two levels above. Director scope. Revisit in 3-4 years.' },
+  { id: 20, company: 'Doccla', title: 'Technical Programme Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'HL7/FHIR technical gap. Below level.' },
+  { id: 21, company: 'Benepass', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '$150k-$180k', notes: 'US remote only. Geography rules it out.' },
+  { id: 22, company: 'Pion', title: 'Senior Delivery Lead', status: 'skipped', verdict: 'skip', salary: '', notes: 'Delivery governance. Wrong trajectory.' },
+  { id: 23, company: 'Stack Overflow', title: 'Staff Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Right work type, wrong career stage. Revisit in 3-4 years.' },
+  { id: 24, company: 'Autodesk', title: 'Technical Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Engineering/SRE background required.' },
+  { id: 25, company: 'OFX', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'L1 technical support role. Wrong type.' },
+  { id: 26, company: 'Accurx', title: 'User Support Operations Manager', status: 'skipped', verdict: 'skip', salary: '£45k-£57k', notes: 'Support ops. Below comp floor.' },
+  { id: 27, company: 'Anthropic', title: 'Programme Manager, Partner Delivery', status: 'skipped', verdict: 'skip', salary: '£160k-£215k', notes: 'Partner economics specialist. Wrong profile.' },
+  { id: 28, company: 'Ctrl Alt', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. Support/assist framing. Full office required.' },
+  { id: 29, company: 'Amplify Health', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Heavy operational execution. Asia-focused multi-market.' },
+  { id: 30, company: 'Binagora', title: 'Technical Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Argentina-based contract. Cloud/infrastructure TPM.' },
+  { id: 31, company: 'Liberis', title: 'Product Operations Associate', status: 'skipped', verdict: 'skip', salary: '', notes: 'Junior/entry level. "Start your career" framing.' },
+  { id: 32, company: 'Solum Health', title: 'Product Operations', status: 'skipped', verdict: 'skip', salary: '', notes: 'US-based. Requires coding/building skills.' },
+];
+
+function loadRoles() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      roles = JSON.parse(saved);
+    } else {
+      roles = INITIAL_ROLES;
+      saveRoles();
+    }
+  } catch(e) {
+    roles = INITIAL_ROLES;
+    saveRoles();
+  }
+  renderTracker();
+}
+
+function saveRoles() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
+    const el = document.getElementById('last-saved');
+    if (el) el.textContent = 'Saved ' + new Date().toLocaleTimeString();
+  } catch(e) {}
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'tracker') renderTracker();
+}
+
+function getStatusBadge(status) {
+  const map = { applied: 'Applied', rejected: 'Rejected', screening: 'Screening', interviewing: 'Interviewing', offer: 'Offer', ghosted: 'Ghosted', evaluating: 'Evaluating', skipped: 'Skipped' };
+  return `<span class="badge badge-${status}">${map[status] || status}</span>`;
+}
+
+function getVerdictBadge(v) {
+  if (!v) return '';
+  const map = { apply: 'Apply', consider: 'Consider', skip: 'Skip' };
+  return `<span class="verdict ${v}">${map[v]}</span>`;
+}
+
+function renderTracker() {
+  const filtered = currentFilter === 'all' ? roles : roles.filter(r => r.status === currentFilter);
+  const total = roles.length;
+  const applied = roles.filter(r => r.status === 'applied').length;
+  const active = roles.filter(r => r.status === 'screening' || r.status === 'interviewing').length;
+  const rejected = roles.filter(r => r.status === 'rejected').length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num">${applied}</div><div class="stat-label">Applied</div></div>
+    <div class="stat"><div class="stat-num">${active}</div><div class="stat-label">Active</div></div>
+    <div class="stat"><div class="stat-num">${rejected}</div><div class="stat-label">Rejected</div></div>
+  `;
+
+  const list = document.getElementById('roles-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">No roles in this category.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => `
+    <div class="card">
+      <div class="card-header">
+        <div style="flex:1;">
+          <div class="card-title">${r.title}</div>
+          <div class="card-sub">${r.company}${r.salary ? ' · ' + r.salary : ''}</div>
+        </div>
+        <div class="badges">
+          ${getStatusBadge(r.status)}
+          ${getVerdictBadge(r.verdict)}
+        </div>
+      </div>
+      ${r.notes ? `<div class="card-notes">${r.notes}</div>` : ''}
+      <div class="card-actions">
+        <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="openEdit(${r.id})">Edit</button>
+        <button class="btn btn-danger" style="font-size:12px;padding:5px 12px;" onclick="deleteRole(${r.id})">Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRoles(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTracker();
+}
+
+function addRole() {
+  const company = document.getElementById('add-company').value.trim();
+  const title = document.getElementById('add-title').value.trim();
+  if (!company || !title) { alert('Please enter company and title.'); return; }
+  const role = {
+    id: Date.now(),
+    company,
+    title,
+    status: document.getElementById('add-status').value,
+    salary: document.getElementById('add-salary').value.trim(),
+    verdict: document.getElementById('add-verdict').value,
+    notes: document.getElementById('add-notes').value.trim(),
+    date: new Date().toISOString().slice(0, 10)
+  };
+  roles.unshift(role);
+  saveRoles();
+  ['add-company','add-title','add-salary','add-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('add-status').value = 'evaluating';
+  document.getElementById('add-verdict').value = '';
+  const c = document.getElementById('add-confirm');
+  c.style.display = 'block';
+  setTimeout(() => c.style.display = 'none', 2500);
+}
+
+function openEdit(id) {
+  editingId = id;
+  const r = roles.find(x => x.id === id);
+  if (!r) return;
+  const statuses = ['evaluating','applied','screening','interviewing','offer','rejected','ghosted','skipped'];
+  document.getElementById('edit-status').innerHTML = statuses.map(s =>
+    `<option value="${s}" ${r.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`
+  ).join('');
+  document.getElementById('edit-notes').value = r.notes || '';
+  document.getElementById('edit-verdict').value = r.verdict || '';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingId = null;
+}
+
+function saveEdit() {
+  const r = roles.find(x => x.id === editingId);
+  if (!r) return;
+  r.status = document.getElementById('edit-status').value;
+  r.notes = document.getElementById('edit-notes').value;
+  r.verdict = document.getElementById('edit-verdict').value;
+  saveRoles();
+  closeModal();
+  renderTracker();
+}
+
+function deleteRole(id) {
+  if (!confirm('Remove this role?')) return;
+  roles = roles.filter(r => r.id !== id);
+  saveRoles();
+  renderTracker();
+}
+
+loadRoles();
+</script>
+</body>
+</html>
