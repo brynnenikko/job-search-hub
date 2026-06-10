@@ -410,12 +410,12 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 <div class="modal-overlay" id="api-modal">
   <div class="api-modal">
     <h3>Connect AI (free)</h3>
-    <p>Enter your free Gemini API key to enable AI features: Ask, JD scanning, and per-role drafting. No credit card needed. Stored only in your browser's localStorage.</p>
-    <p>Get a free key at <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> → sign in with Google → "Get API key" → "Create API key"</p>
+    <p>Enter your free Groq API key to enable AI features: Ask, JD scanning, and per-role drafting. No credit card needed. Stored only in your browser's localStorage.</p>
+    <p>Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> → sign up → API Keys → Create API key</p>
     <div class="form-field" style="margin-top:12px;">
-      <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-…">
+      <input class="form-input" id="api-key-input" type="password" placeholder="gsk_…">
     </div>
-    <p class="api-note">Free tier: 1,500 requests/day, no card required. Key stored locally on this device only.</p>
+    <p class="api-note">Free tier: 14,400 requests/day. Key stored locally on this device only.</p>
     <div class="modal-actions">
       <button class="btn" onclick="closeApiModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
@@ -432,7 +432,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 
 <script>
 const STORAGE_KEY = 'brynne_job_hub_v2';
-const API_KEY_KEY = 'brynne_gemini_key';
+const API_KEY_KEY = 'brynne_groq_key';
 let roles = [];
 let currentFilter = 'all';
 let currentSort = { key: 'company', dir: 1 };
@@ -473,7 +473,7 @@ const INITIAL_ROLES = [
   { id: 8, company: 'Amex via CBTS', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '£40-50/hr IR35', dateApplied: '2026-05-19', notes: 'Contract role. Follow-up sent. Viewed on LinkedIn, no movement.' },
   { id: 9, company: 'Curinos', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '£70,000', dateApplied: '2026-05-12', notes: 'No response. Financial services domain. Lower priority.' },
   { id: 10, company: 'Sedgwick', title: 'Senior Product Operations Analyst', status: 'applied', verdict: 'consider', salary: '£70,000', dateApplied: '2026-05-28', notes: 'No response. Insurance domain. Process design mandate.' },
-  { id: 11, company: 'Joko', title: 'Product Operations Lead', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'Strong fit. Founding mandate, COO reporting line. Paris HQ, remote friendly. Apply ASAP.' },
+  { id: 11, company: 'Joko', title: 'Product Operations Lead', status: 'rejected', verdict: 'apply', salary: '', dateApplied: '2026-06-05', notes: 'Applied 5 June. Rejected 8 June. Needed someone permanently in Paris or Spain.' },
   { id: 12, company: 'OpenFX', title: 'Product Operations Manager', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'Strong fit. AI tooling gap to address in application.' },
   { id: 13, company: 'Scarlet', title: 'Dynamic Resource Operations', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'People ops pivot. Strong experiential match from UofA and msk.ai cohort work. CV reframed.' },
   { id: 14, company: 'Camunda', title: 'Senior Technical Productivity Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '', notes: 'Rejected.' },
@@ -504,7 +504,7 @@ const DATE_PATCH = {
   'Planet': '2026-03-17', 'Primer': '2026-03-18', 'Basecamp Research': '2026-03-24',
   'Bentley Systems': '2026-03-25', 'ClickHouse': '2026-03-27', 'Smartcat': '2026-03-31',
   'Zen Educate': '2026-04-02', 'Contentful': '2026-04-14', 'Confidential Careers': '2026-04-28',
-  'SmartRecruiters': '2026-03-25',
+  'Joko': '2026-06-05',
 };
 
 function loadRoles() {
@@ -856,7 +856,7 @@ function showApiModal() {
 function closeApiModal() { document.getElementById('api-modal').classList.remove('open'); }
 function saveApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
-  if (!key) { alert('Please paste your Gemini API key.'); return; }
+  if (!key) { alert('Please paste your Groq API key.'); return; }
   localStorage.setItem(API_KEY_KEY, key);
   document.getElementById('api-key-input').value = '';
   checkApiKey(); closeApiModal();
@@ -943,15 +943,22 @@ Be direct and practical. No em dashes. Keep responses focused and actionable. Wh
 User message: ${text}`;
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 1024,
+        messages: [
+          { role: 'system', content: fullPrompt.split('User message:')[0].trim() },
+          { role: 'user', content: text }
+        ]
+      })
     });
     const data = await res.json();
     removeTyping(typingId);
-    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      appendMsg('ai', data.candidates[0].content.parts[0].text);
+    if (data.choices && data.choices[0]?.message?.content) {
+      appendMsg('ai', data.choices[0].message.content);
     } else if (data.error) {
       appendMsg('ai', `Error: ${data.error.message}`);
     } else {
@@ -1028,14 +1035,21 @@ JOB DESCRIPTION:
 ${jd}`;
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 1024,
+        messages: [
+          { role: 'system', content: 'You are a job search advisor for Brynne Inglish. Be direct and structured. No em dashes.' },
+          { role: 'user', content: prompt }
+        ]
+      })
     });
     const data = await res.json();
-    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      const text = data.candidates[0].content.parts[0].text;
+    if (data.choices && data.choices[0]?.message?.content) {
+      const text = data.choices[0].message.content;
       const verdictMatch = text.match(/VERDICT:\s*(Apply|Consider|Skip)/i);
       const verdict = verdictMatch ? verdictMatch[1].toLowerCase() : 'consider';
       const vColors = { apply: ['var(--green-bg)','var(--green)'], consider: ['var(--amber-bg)','var(--amber)'], skip: ['var(--red-bg)','var(--red)'] };
