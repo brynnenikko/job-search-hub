@@ -316,6 +316,11 @@ textarea.form-input { resize: vertical; min-height: 70px; }
         </div>
         <div class="scan-result" id="scan-result">
           <div class="scan-verdict" id="scan-verdict-row"></div>
+          <div id="scan-save-bar" style="display:none;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);display:none;align-items:center;gap:10px;flex-wrap:wrap;">
+            <input id="scan-company" class="form-input" placeholder="Company name" style="width:160px;padding:5px 9px;font-size:12px;">
+            <input id="scan-title" class="form-input" placeholder="Role title" style="flex:1;min-width:180px;padding:5px 9px;font-size:12px;">
+            <button class="btn btn-primary" onclick="saveScannedRole()" style="white-space:nowrap;">+ Save to tracker</button>
+          </div>
           <div class="scan-body" id="scan-body"></div>
         </div>
       </div>
@@ -1003,6 +1008,9 @@ function removeTyping(id) {
 }
 
 // ── JD SCANNER ──
+let lastScanVerdict = 'consider';
+let lastScanText = '';
+
 async function scanJD() {
   const jd = document.getElementById('jd-input').value.trim();
   if (!jd) { alert('Please paste a job description.'); return; }
@@ -1013,26 +1021,37 @@ async function scanJD() {
   const result = document.getElementById('scan-result');
   const body = document.getElementById('scan-body');
   const verdictRow = document.getElementById('scan-verdict-row');
+  const saveBar = document.getElementById('scan-save-bar');
   result.className = 'scan-result show';
   verdictRow.innerHTML = '<span style="color:var(--text-3);font-size:13px;">Evaluating…</span>';
   body.textContent = '';
+  saveBar.style.display = 'none';
 
-  const prompt = `${BRYNNE_CONTEXT}
+  const systemPrompt = `You are acting as a highly experienced career strategist and hiring manager specialising in Product Operations, Strategy, and Technical Program roles in high-growth tech companies.
 
-Evaluate the following job description for Brynne. Give a structured response with:
-1. VERDICT: Apply / Consider / Skip (and one sentence why)
-2. WORK TYPE FIT: Is this systems/operating model work or delivery execution?
-3. LEVEL FIT: Does it match Senior IC target? Any red flags?
-4. DOMAIN: Any hard filters triggered?
-5. COMP: Is salary mentioned and does it meet the floor?
-6. KEY GAPS: What gaps does Brynne have for this specific role?
-7. APPLICATION ANGLE: If applying, what's the strongest angle to lead with?
-8. RISKS: What might cause a screen failure?
+You are advising Brynne Inglish directly. Speak in second person — address her as "you", not "Brynne" or "the candidate". Be objective, honest, and non-sugarcoated. Do not default to encouragement. Prioritise accuracy and calibration.
 
-Be direct. No em dashes. No fluff.
+${BRYNNE_CONTEXT}
 
-JOB DESCRIPTION:
-${jd}`;
+EVALUATION FRAMEWORK — assess the role across all of these:
+1. QUICK VERDICT: Strong fit / Stretch / Misaligned (one punchy sentence)
+2. WHY (brutally honest): Clear reasoning, not generic. What makes this right or wrong for you.
+3. LEVEL ASSESSMENT: Below / At level / Stretch — and why
+4. WORK TYPE BREAKDOWN: Estimate % system design vs execution. Does this operate at the system level or within it?
+5. BIGGEST RISK: What could go wrong for you in this role. What's the trap.
+6. COMP AND POSITIONING: What the salary or level signals about the role, if inferable.
+7. MARKET REALITY CHECK: Are you realistically competitive? What candidate profile is likely beating you?
+8. FINAL RECOMMENDATION: Apply / Apply selectively / Skip — and the single most important reason.
+
+OUTPUT FORMAT RULES:
+- Write directly to Brynne using "you" and "your"
+- No em dashes
+- No generic filler phrases
+- Be sharp and specific to this actual JD, not a template response
+- Start with the verdict line immediately, no preamble
+- Use the section headers above, bolded`;
+
+  const userPrompt = `Here is the job description to evaluate:\n\n${jd}`;
 
   try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -1040,28 +1059,89 @@ ${jd}`;
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        max_tokens: 1024,
+        max_tokens: 1200,
         messages: [
-          { role: 'system', content: 'You are a job search advisor for Brynne Inglish. Be direct and structured. No em dashes.' },
-          { role: 'user', content: prompt }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ]
       })
     });
     const data = await res.json();
     if (data.choices && data.choices[0]?.message?.content) {
       const text = data.choices[0].message.content;
-      const verdictMatch = text.match(/VERDICT:\s*(Apply|Consider|Skip)/i);
-      const verdict = verdictMatch ? verdictMatch[1].toLowerCase() : 'consider';
+      lastScanText = text;
+
+      // Parse verdict
+      const verdictMatch = text.match(/FINAL RECOMMENDATION[:\s*]*(Apply selectively|Apply|Skip)/i)
+        || text.match(/QUICK VERDICT[:\s*]*(Strong fit|Stretch|Misaligned)/i);
+      let verdict = 'consider';
+      if (verdictMatch) {
+        const v = verdictMatch[1].toLowerCase();
+        if (v.includes('strong fit') || v === 'apply') verdict = 'apply';
+        else if (v.includes('selectively') || v.includes('stretch')) verdict = 'consider';
+        else if (v.includes('misaligned') || v === 'skip') verdict = 'skip';
+      }
+      lastScanVerdict = verdict;
+
+      // Try to extract company and role from JD text
+      const companyMatch = jd.match(/^([A-Z][A-Za-z0-9\s&.,'-]{1,40}?)\s*[\n|–|-]/m);
+      const titleMatch = jd.match(/(Senior|Lead|Head|Staff|Principal)?[\s]?(Product Operations|Product Ops|Operations|Technical Program|Programme)[^\n]{0,60}/i);
+      document.getElementById('scan-company').value = companyMatch ? companyMatch[1].trim() : '';
+      document.getElementById('scan-title').value = titleMatch ? titleMatch[0].trim() : '';
+
       const vColors = { apply: ['var(--green-bg)','var(--green)'], consider: ['var(--amber-bg)','var(--amber)'], skip: ['var(--red-bg)','var(--red)'] };
-      const [vbg, vc] = vColors[verdict] || vColors.consider;
-      verdictRow.innerHTML = `<span class="scan-verdict-badge badge" style="background:${vbg};color:${vc};">${verdict.charAt(0).toUpperCase()+verdict.slice(1)}</span>`;
-      body.textContent = text;
+      const [vbg, vc] = vColors[verdict];
+      const vLabel = { apply: 'Apply', consider: 'Apply selectively', skip: 'Skip' }[verdict];
+      verdictRow.innerHTML = `<span class="scan-verdict-badge badge" style="background:${vbg};color:${vc};font-size:13px;padding:5px 14px;">${vLabel}</span>`;
+
+      // Render formatted body
+      body.innerHTML = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+
+      saveBar.style.display = 'flex';
     } else {
+      verdictRow.innerHTML = '';
       body.textContent = 'Error: ' + (data.error?.message || 'Unknown error');
     }
   } catch(e) {
+    verdictRow.innerHTML = '';
     body.textContent = 'Something went wrong. Check your API key.';
   }
+}
+
+function saveScannedRole() {
+  const company = document.getElementById('scan-company').value.trim();
+  const title = document.getElementById('scan-title').value.trim();
+  if (!company || !title) { alert('Please fill in the company and role title before saving.'); return; }
+
+  const verdictMap = { apply: 'apply', consider: 'consider', skip: 'skip' };
+  roles.unshift({
+    id: Date.now(),
+    company,
+    title,
+    status: 'evaluating',
+    verdict: verdictMap[lastScanVerdict] || 'consider',
+    salary: '',
+    dateApplied: '',
+    notes: 'Added from JD scanner. ' + lastScanText.slice(0, 200).replace(/\n/g, ' ') + '…'
+  });
+  saveRoles();
+  renderAll();
+
+  document.getElementById('scan-save-bar').style.display = 'none';
+  const btn = document.querySelector('#scan-save-bar button');
+  if (btn) { btn.textContent = '✓ Saved'; btn.style.background = 'var(--green)'; }
+
+  // Show confirm
+  const bar = document.getElementById('scan-save-bar');
+  bar.style.display = 'flex';
+  const confirm = document.createElement('span');
+  confirm.textContent = `✓ ${company} saved to tracker`;
+  confirm.style.cssText = 'font-size:12px;color:var(--green);font-weight:500;';
+  bar.appendChild(confirm);
+  setTimeout(() => { confirm.remove(); }, 3000);
 }
 
 // ── HELPERS ──
