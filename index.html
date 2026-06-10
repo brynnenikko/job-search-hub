@@ -5,213 +5,370 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Job Search Hub — Brynne Inglish</title>
 <style>
-  :root {
-    --bg: #FAFAF9; --bg2: #F4F3F0; --bg3: #ECEAE5; --border: #E0DDD8;
-    --text: #1A1916; --text2: #6B6860; --text3: #9B9890;
-    --green-bg: #EDFAED; --green: #1B7E2A;
-    --red-bg: #FDEEED; --red: #C0392B;
-    --yellow-bg: #FEF9E7; --yellow: #9A7B00;
-    --blue-bg: #EBF3FE; --blue: #1A5FAD;
-    --purple-bg: #F0EFFE; --purple: #5B4FCB;
-    --orange-bg: #FEF3E7; --orange: #B35A00;
-    --radius: 8px; --radius-lg: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Georgia', serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-  .header { border-bottom: 1px solid var(--border); padding: 1.1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: white; position: sticky; top: 0; z-index: 10; }
-  .header-left h1 { font-size: 17px; font-weight: normal; }
-  .header-left p { font-size: 12px; color: var(--text2); margin-top: 1px; font-family: 'Courier New', monospace; }
-  .container { max-width: 960px; margin: 0 auto; padding: 1.75rem 2rem; }
-  .tabs { display: flex; gap: 0; margin-bottom: 1.75rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; width: fit-content; background: white; }
-  .tab { padding: 8px 18px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--text2); font-family: 'Georgia', serif; transition: all 0.15s; border-right: 1px solid var(--border); white-space: nowrap; }
-  .tab:last-child { border-right: none; }
-  .tab.active { background: var(--text); color: white; }
-  .tab:hover:not(.active) { background: var(--bg2); color: var(--text); }
-  .panel { display: none; }
-  .panel.active { display: block; }
-  textarea, input[type=text], select { width: 100%; padding: 8px 11px; font-size: 13px; font-family: 'Georgia', serif; border: 1px solid var(--border); border-radius: var(--radius); background: white; color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; }
-  textarea:focus, input:focus, select:focus { border-color: var(--text); }
-  .label { font-size: 11px; color: var(--text2); margin-bottom: 5px; display: block; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-  .field { margin-bottom: 1rem; }
-  .btn { padding: 7px 16px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius); background: white; color: var(--text); cursor: pointer; font-family: 'Georgia', serif; transition: all 0.15s; }
-  .btn:hover { background: var(--bg2); }
-  .btn-primary { background: var(--text); color: white; border-color: var(--text); }
-  .btn-primary:hover { opacity: 0.82; background: var(--text); }
-  .btn-danger { color: var(--red); border-color: transparent; background: none; padding: 7px 10px; }
-  .btn-danger:hover { background: var(--red-bg); }
-  .btn-sm { padding: 4px 10px; font-size: 12px; }
+:root {
+  --bg: #F7F6F3;
+  --surface: #FFFFFF;
+  --border: #E2DDD8;
+  --border-light: #EDE9E4;
+  --text: #1C1A17;
+  --text-2: #6B6760;
+  --text-3: #A8A49F;
+  --accent: #1C1A17;
+  --green: #1A6B28; --green-bg: #EAF5EB;
+  --red: #B83232; --red-bg: #FCEAEA;
+  --amber: #8A6000; --amber-bg: #FEF5E0;
+  --blue: #1A52A0; --blue-bg: #EAF0FC;
+  --purple: #5040B8; --purple-bg: #EEEAFC;
+  --grey-bg: #F0EDE8;
+  --radius: 6px;
+  --ai-accent: #2D5BE3;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; min-height: 100vh; }
 
-  /* Action items banner */
-  .action-banner { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; }
-  .action-banner h3 { font-size: 12px; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; color: var(--yellow); margin-bottom: 0.75rem; }
-  .action-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #FDE68A; gap: 1rem; }
-  .action-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .action-item-left { font-size: 13px; color: var(--text); }
-  .action-item-company { font-size: 11px; color: var(--text2); font-family: 'Courier New', monospace; margin-top: 1px; }
+/* HEADER */
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; height: 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+.nav { display: flex; gap: 2px; }
+.nav-btn { padding: 5px 12px; border-radius: var(--radius); border: none; background: none; color: var(--text-2); cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.12s; }
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active { background: var(--text); color: white; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.stat-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 99px; padding: 3px 10px; font-size: 11px; color: var(--text-2); }
+.stat-pill span { color: var(--text); font-weight: 600; }
+#api-status { font-size: 11px; cursor: pointer; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); color: var(--text-3); }
+#api-status.connected { color: var(--green); border-color: var(--green-bg); background: var(--green-bg); }
 
-  /* Status pipeline */
-  .pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 1.75rem; }
-  .pipe-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1rem; text-align: center; cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow); }
-  .pipe-card:hover, .pipe-card.active { border-color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  .pipe-card.active { background: var(--text); }
-  .pipe-card.active .pipe-num { color: white; }
-  .pipe-card.active .pipe-label { color: rgba(255,255,255,0.7); }
-  .pipe-num { font-size: 26px; font-weight: normal; color: var(--text); letter-spacing: -1px; }
-  .pipe-label { font-size: 10px; color: var(--text2); margin-top: 2px; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-  .pipe-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 6px; }
+/* LAYOUT */
+.app { display: flex; height: calc(100vh - 48px); overflow: hidden; }
+.main { flex: 1; overflow-y: auto; min-width: 0; }
+.panel { display: none; padding: 0; }
+.panel.active { display: flex; flex-direction: column; height: 100%; }
 
-  /* Status colours for pipeline dots */
-  .dot-waiting { background: var(--blue); }
-  .dot-active { background: var(--orange); }
-  .dot-rejected { background: var(--red); }
-  .dot-ghosted { background: var(--text3); }
-  .dot-all { background: var(--text); }
+/* AI DRAWER */
+.ai-drawer { width: 380px; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; transition: width 0.2s; flex-shrink: 0; }
+.ai-drawer.collapsed { width: 0; border-left: none; overflow: hidden; }
+.ai-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.ai-header-left { display: flex; align-items: center; gap: 8px; }
+.ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ai-accent); }
+.ai-title { font-size: 13px; font-weight: 600; }
+.ai-context-label { font-size: 11px; color: var(--text-3); background: var(--bg); border-radius: 99px; padding: 2px 8px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-close { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 16px; padding: 2px 6px; border-radius: 4px; }
+.ai-close:hover { background: var(--bg); color: var(--text); }
+.ai-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 100%; }
+.msg-user { align-self: flex-end; background: var(--text); color: white; border-radius: 12px 12px 2px 12px; padding: 8px 12px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+.msg-ai { align-self: flex-start; background: var(--bg); border-radius: 12px 12px 12px 2px; padding: 10px 13px; font-size: 13px; line-height: 1.6; color: var(--text); max-width: 100%; }
+.msg-ai strong { font-weight: 600; }
+.msg-ai ul { margin: 6px 0 0 16px; }
+.msg-ai li { margin-bottom: 3px; }
+.typing { display: flex; gap: 4px; align-items: center; padding: 10px 13px; }
+.typing span { width: 6px; height: 6px; background: var(--text-3); border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+.ai-input-area { border-top: 1px solid var(--border); padding: 12px; flex-shrink: 0; }
+.ai-quick { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.ai-quick-btn { font-size: 11px; padding: 4px 9px; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); color: var(--text-2); cursor: pointer; white-space: nowrap; }
+.ai-quick-btn:hover { border-color: var(--ai-accent); color: var(--ai-accent); }
+.ai-input-row { display: flex; gap: 6px; }
+.ai-input { flex: 1; padding: 8px 11px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; resize: none; outline: none; height: 36px; transition: border-color 0.12s; }
+.ai-input:focus { border-color: var(--ai-accent); }
+.ai-send { padding: 8px 14px; background: var(--ai-accent); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.ai-send:hover { opacity: 0.88; }
+.ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* Role cards */
-  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.15rem; margin-bottom: 0.6rem; box-shadow: var(--shadow); transition: box-shadow 0.15s; }
-  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-  .card-title { font-size: 14px; color: var(--text); line-height: 1.4; }
-  .card-sub { font-size: 12px; color: var(--text2); margin-top: 2px; font-family: 'Courier New', monospace; }
-  .card-notes { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.5; border-top: 1px solid var(--bg3); padding-top: 7px; }
-  .card-actions { display: flex; gap: 2px; margin-top: 6px; }
-  .badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-  .badge { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-family: 'Courier New', monospace; }
-  .badge-applied { background: var(--blue-bg); color: var(--blue); }
-  .badge-rejected { background: var(--red-bg); color: var(--red); }
-  .badge-screening { background: var(--orange-bg); color: var(--orange); }
-  .badge-interviewing { background: var(--green-bg); color: var(--green); }
-  .badge-offer { background: #E8F8E8; color: #1B6B1B; }
-  .badge-ghosted { background: var(--bg2); color: var(--text3); }
-  .badge-evaluating { background: var(--purple-bg); color: var(--purple); }
-  .badge-skipped { background: var(--bg2); color: var(--text3); }
-  .verdict { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-family: 'Courier New', monospace; }
-  .verdict.apply { background: var(--green-bg); color: var(--green); }
-  .verdict.skip { background: var(--red-bg); color: var(--red); }
-  .verdict.consider { background: var(--yellow-bg); color: var(--yellow); }
+/* TRACKER PANEL */
+.tracker-toolbar { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; background: var(--surface); }
+.filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-chip { padding: 4px 11px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; font-size: 12px; transition: all 0.12s; }
+.filter-chip:hover { border-color: var(--text); color: var(--text); }
+.filter-chip.active { background: var(--text); color: white; border-color: var(--text); }
+.toolbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.btn { padding: 6px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-size: 12px; font-family: inherit; transition: all 0.12s; }
+.btn:hover { background: var(--bg); }
+.btn-primary { background: var(--text); color: white; border-color: var(--text); }
+.btn-primary:hover { opacity: 0.85; background: var(--text); }
 
-  /* Status legend */
-  .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; padding: 0.75rem 1rem; background: var(--bg2); border-radius: var(--radius); }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); font-family: 'Courier New', monospace; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* SPREADSHEET TABLE */
+.table-wrap { flex: 1; overflow: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+thead { position: sticky; top: 0; z-index: 10; }
+th { background: var(--bg); border-bottom: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-2); white-space: nowrap; user-select: none; cursor: pointer; }
+th:hover { color: var(--text); }
+th .sort-icon { margin-left: 4px; color: var(--text-3); }
+td { padding: 0; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+tr:hover td { background: #FAFAF7; }
+tr.selected td { background: #EFF3FF; }
+.cell { padding: 8px 12px; display: flex; align-items: center; min-height: 40px; }
+.cell-company { font-weight: 600; font-size: 13px; }
+.cell-title { color: var(--text-2); font-size: 12px; max-width: 280px; }
+.cell-salary { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.cell-notes { font-size: 12px; color: var(--text-2); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cell-date { font-size: 11px; color: var(--text-3); white-space: nowrap; font-family: 'Courier New', monospace; }
+.cell-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.1s; }
+tr:hover .cell-actions { opacity: 1; }
+.act-btn { padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; font-size: 11px; font-family: inherit; white-space: nowrap; }
+.act-btn:hover { border-color: var(--text); color: var(--text); }
+.act-btn.ai { border-color: var(--ai-accent); color: var(--ai-accent); background: var(--blue-bg); }
+.act-btn.ai:hover { background: #D6E4FF; }
 
-  /* Comparison table */
-  .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .comp-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); border-bottom: 1px solid var(--border); font-weight: normal; background: var(--bg2); }
-  .comp-table td { padding: 9px 12px; border-bottom: 1px solid var(--bg3); vertical-align: middle; }
-  .comp-table tr:last-child td { border-bottom: none; }
-  .comp-table tr:hover td { background: var(--bg2); }
-  .comp-table-wrap { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
-  .applied-tick { color: var(--green); font-size: 14px; }
-  .not-applied { color: var(--text3); font-size: 12px; font-family: 'Courier New', monospace; }
+/* BADGES */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.b-applied { background: var(--blue-bg); color: var(--blue); }
+.b-rejected { background: var(--red-bg); color: var(--red); }
+.b-screening { background: var(--amber-bg); color: var(--amber); }
+.b-interviewing { background: var(--green-bg); color: var(--green); }
+.b-offer { background: var(--green-bg); color: var(--green); font-weight: 700; }
+.b-ghosted { background: var(--grey-bg); color: var(--text-3); }
+.b-evaluating { background: var(--purple-bg); color: var(--purple); }
+.b-skipped { background: var(--grey-bg); color: var(--text-3); }
+.v-apply { background: var(--green-bg); color: var(--green); }
+.v-skip { background: var(--red-bg); color: var(--red); }
+.v-consider { background: var(--amber-bg); color: var(--amber); }
 
-  .empty { text-align: center; padding: 3.5rem 1rem; color: var(--text3); font-size: 14px; }
-  .modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: center; justify-content: center; }
-  .modal-bg.open { display: flex; }
-  .modal { background: white; border-radius: var(--radius-lg); padding: 1.5rem; width: 90%; max-width: 480px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.12); max-height: 90vh; overflow-y: auto; }
-  .modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 1.25rem; }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
-  .confirm-msg { font-size: 12px; color: var(--green); margin-top: 0.75rem; display: none; font-family: 'Courier New', monospace; }
-  .section-title { font-size: 11px; color: var(--text2); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 1rem; }
-  .info-box { background: var(--blue-bg); border: 1px solid #C5D9F5; border-radius: var(--radius); padding: 1rem 1.15rem; font-size: 13px; color: var(--blue); line-height: 1.6; margin-bottom: 1.25rem; }
-  .eval-hint { background: var(--bg2); border-radius: var(--radius); padding: 1.15rem; font-size: 13px; color: var(--text2); line-height: 1.7; }
-  .eval-hint code { font-family: 'Courier New', monospace; background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--text); font-size: 12px; }
-  #last-saved { font-size: 11px; color: var(--text3); font-family: 'Courier New', monospace; }
+/* INLINE EDIT */
+.inline-input { border: 1px solid var(--ai-accent); border-radius: 4px; padding: 4px 7px; font-size: 13px; font-family: inherit; outline: none; background: white; width: 100%; }
+.inline-select { border: 1px solid var(--ai-accent); border-radius: 4px; padding: 3px 6px; font-size: 12px; font-family: inherit; outline: none; background: white; cursor: pointer; }
+
+/* OVERVIEW PANEL */
+.overview-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+.stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.12s; }
+.stat-card:hover { border-color: var(--text); }
+.stat-card.active { border-color: var(--ai-accent); background: var(--blue-bg); }
+.stat-card.total-card { cursor: default; }
+.stat-card.total-card:hover { border-color: var(--border); }
+.stat-num { font-size: 28px; font-weight: 300; letter-spacing: -1px; color: var(--text); }
+.stat-label { font-size: 11px; color: var(--text-2); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section-head { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.action-cards { display: flex; flex-direction: column; gap: 6px; }
+.action-card { background: var(--surface); border: 1px solid var(--amber-bg); border-left: 3px solid #D4900A; border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.action-card-info { flex: 1; min-width: 0; }
+.action-card-title { font-size: 13px; font-weight: 500; }
+.action-card-sub { font-size: 11px; color: var(--text-2); margin-top: 1px; font-family: 'Courier New', monospace; }
+
+/* PIPELINE SECTIONS */
+.pipeline-sections { display: flex; flex-direction: column; gap: 4px; }
+.pipe-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.pipe-section-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; transition: background 0.1s; }
+.pipe-section-header:hover { background: var(--bg); }
+.pipe-section-title { font-size: 13px; font-weight: 600; flex: 1; }
+.pipe-section-count { font-size: 11px; color: var(--text-3); font-family: 'Courier New', monospace; }
+.pipe-section-chevron { font-size: 10px; color: var(--text-3); transition: transform 0.15s; }
+.pipe-section.open .pipe-section-chevron { transform: rotate(180deg); }
+.pipe-section-body { display: none; border-top: 1px solid var(--border-light); }
+.pipe-section.open .pipe-section-body { display: block; }
+.pipe-role-card { padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--border-light); transition: background 0.1s; }
+.pipe-role-card:last-child { border-bottom: none; }
+.pipe-role-card:hover { background: #FAFAF7; }
+.pipe-role-left { flex: 1; min-width: 0; }
+.pipe-role-company { font-size: 13px; font-weight: 600; }
+.pipe-role-title { font-size: 11px; color: var(--text-2); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; }
+.pipe-role-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pipe-date { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.pipe-date-applied { font-size: 11px; color: var(--text-2); font-family: 'Courier New', monospace; }
+.pipe-days { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
+.pipe-days.fresh { background: var(--green-bg); color: var(--green); }
+.pipe-days.medium { background: var(--amber-bg); color: var(--amber); }
+.pipe-days.stale { background: var(--red-bg); color: var(--red); }
+
+/* SCANNER PANEL */
+.scanner-content { flex: 1; overflow-y: auto; padding: 24px; max-width: 760px; }
+.scanner-content h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.scanner-content p { color: var(--text-2); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+.jd-textarea { width: 100%; min-height: 220px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; resize: vertical; outline: none; transition: border-color 0.12s; }
+.jd-textarea:focus { border-color: var(--ai-accent); }
+.scan-actions { display: flex; gap: 8px; margin-top: 10px; }
+.scan-result { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; display: none; }
+.scan-result.show { display: block; }
+.scan-verdict { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.scan-verdict-badge { font-size: 15px; font-weight: 700; padding: 5px 14px; border-radius: 99px; }
+.scan-body { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+
+/* ADD ROLE MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 10px; padding: 24px; width: 520px; max-width: 95vw; border: 1px solid var(--border); box-shadow: 0 8px 40px rgba(0,0,0,0.12); max-height: 90vh; overflow-y: auto; }
+.modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 18px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field.full { grid-column: 1 / -1; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input { padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; outline: none; }
+.form-input:focus { border-color: var(--ai-accent); }
+textarea.form-input { resize: vertical; min-height: 70px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+/* API KEY MODAL */
+.api-modal { background: var(--surface); border-radius: 10px; padding: 28px; width: 440px; max-width: 95vw; border: 1px solid var(--border); box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+.api-modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.api-modal p { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 16px; }
+.api-modal a { color: var(--ai-accent); }
+.api-note { font-size: 11px; color: var(--text-3); margin-top: 8px; }
+
+/* NOTES EXPAND */
+.notes-cell { position: relative; }
+.notes-full { display: none; position: absolute; left: 0; top: 100%; z-index: 30; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; min-width: 280px; max-width: 380px; font-size: 12px; line-height: 1.6; box-shadow: 0 4px 16px rgba(0,0,0,0.08); white-space: normal; color: var(--text); }
+.notes-cell:hover .notes-full { display: block; }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 60px 20px; color: var(--text-3); font-size: 14px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* TOGGLE AI BTN */
+.toggle-ai-btn { padding: 6px 12px; border-radius: var(--radius); border: 1px solid var(--ai-accent); background: var(--blue-bg); color: var(--ai-accent); cursor: pointer; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.toggle-ai-btn:hover { background: #D6E4FF; }
+
+/* CONTEXT MENU */
+.ctx { display: none; position: fixed; background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 100; min-width: 160px; padding: 4px; }
+.ctx.open { display: block; }
+.ctx-item { padding: 7px 12px; font-size: 13px; cursor: pointer; border-radius: 4px; color: var(--text); }
+.ctx-item:hover { background: var(--bg); }
+.ctx-item.danger { color: var(--red); }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div class="header-left">
-    <h1>Job Search Hub</h1>
-    <p>Brynne Inglish — Product Operations, London</p>
+    <div class="logo">Job Search Hub</div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchPanel('overview', this)">Overview</button>
+      <button class="nav-btn" onclick="switchPanel('tracker', this)">All Roles</button>
+      <button class="nav-btn" onclick="switchPanel('scanner', this)">Scan JD</button>
+    </nav>
   </div>
-  <div id="last-saved"></div>
+  <div class="header-right">
+    <div class="stat-pill" id="header-stats"></div>
+    <button id="api-status" onclick="showApiModal()">⚡ Set API key</button>
+    <button class="toggle-ai-btn" onclick="toggleAI()">✦ Ask Claude</button>
+  </div>
 </div>
 
-<div class="container">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('overview', this)">Overview</button>
-    <button class="tab" onclick="switchTab('tracker', this)">All Roles</button>
-    <button class="tab" onclick="switchTab('comparison', this)">Evaluation Table</button>
-    <button class="tab" onclick="switchTab('add', this)">Add Role</button>
-    <button class="tab" onclick="switchTab('evaluate', this)">Evaluate JD</button>
-  </div>
+<!-- APP -->
+<div class="app">
+  <div class="main">
 
-  <!-- OVERVIEW -->
-  <div id="overview" class="panel active">
-
-    <div id="action-banner"></div>
-
-    <div class="pipeline" id="pipeline"></div>
-
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Applied, waiting</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Active conversation</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Offer</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Rejected</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--text3)"></div>Ghosted</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Evaluating</div>
-    </div>
-
-    <div id="overview-list"></div>
-  </div>
-
-  <!-- ALL ROLES -->
-  <div id="tracker" class="panel">
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.25rem;" id="filter-row">
-      <button class="btn btn-sm active" style="border-radius:99px;" onclick="filterRoles('all',this)">All</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('applied',this)">Applied</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('screening',this)">Screening</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('interviewing',this)">Interviewing</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('offer',this)">Offer</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('rejected',this)">Rejected</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('ghosted',this)">Ghosted</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('evaluating',this)">Evaluating</button>
-      <button class="btn btn-sm" style="border-radius:99px;" onclick="filterRoles('skipped',this)">Skipped</button>
-    </div>
-    <div id="roles-list"></div>
-  </div>
-
-  <!-- COMPARISON TABLE -->
-  <div id="comparison" class="panel">
-    <p class="section-title">All evaluated roles — verdict vs action taken</p>
-    <div class="comp-table-wrap">
-      <table class="comp-table" id="comp-table">
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Role</th>
-            <th>Verdict</th>
-            <th>Applied?</th>
-            <th>Outcome</th>
-          </tr>
-        </thead>
-        <tbody id="comp-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ADD ROLE -->
-  <div id="add" class="panel">
-    <p class="section-title">Add a new role</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-      <div class="field">
-        <label class="label">Company</label>
-        <input type="text" id="add-company" placeholder="e.g. Monzo">
-      </div>
-      <div class="field">
-        <label class="label">Role title</label>
-        <input type="text" id="add-title" placeholder="e.g. Senior Product Operations Manager">
+    <!-- OVERVIEW -->
+    <div id="panel-overview" class="panel active">
+      <div class="overview-content">
+        <div>
+          <div class="section-head">Pipeline</div>
+          <div class="stats-row" id="stats-row"></div>
+        </div>
+        <div id="action-section"></div>
+        <div id="pipeline-section"></div>
       </div>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
-      <div class="field">
-        <label class="label">Status</label>
-        <select id="add-status">
+
+    <!-- TRACKER -->
+    <div id="panel-tracker" class="panel">
+      <div class="tracker-toolbar">
+        <div class="filter-group" id="filter-group">
+          <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+          <button class="filter-chip" onclick="setFilter('applied',this)">Waiting</button>
+          <button class="filter-chip" onclick="setFilter('screening',this)">Screening</button>
+          <button class="filter-chip" onclick="setFilter('interviewing',this)">Interviewing</button>
+          <button class="filter-chip" onclick="setFilter('rejected',this)">Rejected</button>
+          <button class="filter-chip" onclick="setFilter('evaluating',this)">Evaluating</button>
+          <button class="filter-chip" onclick="setFilter('skipped',this)">Skipped</button>
+        </div>
+        <div class="toolbar-right">
+          <input type="text" placeholder="Search…" id="search-input" oninput="renderTracker()" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;outline:none;width:160px;">
+          <button class="btn btn-primary" onclick="openAddModal()">+ Add role</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="roles-table">
+          <thead>
+            <tr>
+              <th onclick="sortBy('company')">Company <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('title')">Role <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('status')">Status <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('verdict')">Fit <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('dateApplied')">Applied <span class="sort-icon">↕</span></th>
+              <th>Salary</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="roles-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SCANNER -->
+    <div id="panel-scanner" class="panel">
+      <div class="scanner-content">
+        <h2>Scan a Job Description</h2>
+        <p>Paste a full JD below. Claude will evaluate it against your profile and search parameters, give a verdict, and flag any gaps or angles for your application.</p>
+        <textarea class="jd-textarea" id="jd-input" placeholder="Paste the full job description here…"></textarea>
+        <div class="scan-actions">
+          <button class="btn btn-primary" onclick="scanJD()">Evaluate JD</button>
+          <button class="btn" onclick="document.getElementById('jd-input').value='';document.getElementById('scan-result').className='scan-result'">Clear</button>
+        </div>
+        <div class="scan-result" id="scan-result">
+          <div class="scan-verdict" id="scan-verdict-row"></div>
+          <div class="scan-body" id="scan-body"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AI DRAWER -->
+  <div class="ai-drawer collapsed" id="ai-drawer">
+    <div class="ai-header">
+      <div class="ai-header-left">
+        <div class="ai-dot"></div>
+        <div class="ai-title">Ask Claude</div>
+        <div class="ai-context-label" id="ai-context-label">General search</div>
+      </div>
+      <button class="ai-close" onclick="toggleAI()">×</button>
+    </div>
+    <div class="ai-messages" id="ai-messages">
+      <div class="msg-ai msg">Hi Brynne. I know your full search context — your CV, all your roles, what you're targeting. Ask me anything. You can also open any role row and hit "AI" to ask about that specific company.</div>
+    </div>
+    <div class="ai-input-area">
+      <div class="ai-quick" id="ai-quick">
+        <button class="ai-quick-btn" onclick="sendQuick('What should I prioritise this week?')">This week</button>
+        <button class="ai-quick-btn" onclick="sendQuick('Which applications have gone quiet?')">Gone quiet</button>
+        <button class="ai-quick-btn" onclick="sendQuick('Where do I stand overall?')">Overall status</button>
+        <button class="ai-quick-btn" onclick="sendQuick('What are my strongest live applications?')">Strongest bets</button>
+      </div>
+      <div class="ai-input-row">
+        <textarea class="ai-input" id="ai-input" placeholder="Ask anything about your search…" onkeydown="handleAIKey(event)" rows="1"></textarea>
+        <button class="ai-send" id="ai-send-btn" onclick="sendAIMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ROLE MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>Add role</h3>
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label">Company</label>
+        <input class="form-input" id="f-company" placeholder="e.g. Monzo">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Role title</label>
+        <input class="form-input" id="f-title" placeholder="e.g. Senior Product Operations Manager">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="f-status">
           <option value="evaluating">Evaluating</option>
-          <option value="applied">Applied</option>
+          <option value="applied">Applied (waiting)</option>
           <option value="screening">Screening</option>
           <option value="interviewing">Interviewing</option>
           <option value="offer">Offer</option>
@@ -220,382 +377,687 @@
           <option value="skipped">Skipped</option>
         </select>
       </div>
-      <div class="field">
-        <label class="label">Verdict</label>
-        <select id="add-verdict">
-          <option value="">— select —</option>
-          <option value="apply">Apply</option>
-          <option value="consider">Consider</option>
-          <option value="skip">Skip</option>
+      <div class="form-field">
+        <label class="form-label">Fit</label>
+        <select class="form-input" id="f-verdict">
+          <option value="">— none —</option>
+          <option value="apply">Strong fit</option>
+          <option value="consider">Possible</option>
+          <option value="skip">Poor fit</option>
         </select>
       </div>
-      <div class="field">
-        <label class="label">Salary range</label>
-        <input type="text" id="add-salary" placeholder="e.g. £70,000-£85,000">
+      <div class="form-field full">
+        <label class="form-label">Salary</label>
+        <input class="form-input" id="f-salary" placeholder="e.g. £70,000-£85,000">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Date applied</label>
+        <input class="form-input" id="f-date" type="date">
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="f-notes" placeholder="Notes, application status, feedback…"></textarea>
       </div>
     </div>
-    <div class="field">
-      <label class="label">Notes</label>
-      <textarea id="add-notes" rows="3" placeholder="Notes, comms history, feedback..."></textarea>
-    </div>
-    <button class="btn btn-primary" onclick="addRole()">Add role</button>
-    <p class="confirm-msg" id="add-confirm">Role added.</p>
-  </div>
-
-  <!-- EVALUATE -->
-  <div id="evaluate" class="panel">
-    <div class="info-box">To evaluate a JD, go to your Claude conversation and type <code>/jd-review</code> followed by the full job description text. Claude will assess it against your profile and tell you whether to apply.</div>
-    <div class="eval-hint">
-      <strong>Your evaluation criteria:</strong><br><br>
-      Work type: system design and operating model work, not delivery coordination<br>
-      Level: Senior (£70k+ base, £85k+ stretch)<br>
-      Location: London / UK remote only<br>
-      Domain: any, but healthtech background strongest<br>
-      Red flags: pure execution, Jira admin, below £65k, US-only, hard technical engineering requirement
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewRole()">Add role</button>
     </div>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-bg" id="edit-modal">
-  <div class="modal">
-    <h3 id="edit-modal-title">Edit role</h3>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-      <div class="field">
-        <label class="label">Status</label>
-        <select id="edit-status"></select>
-      </div>
-      <div class="field">
-        <label class="label">Verdict</label>
-        <select id="edit-verdict">
-          <option value="">— none —</option>
-          <option value="apply">Apply</option>
-          <option value="consider">Consider</option>
-          <option value="skip">Skip</option>
-        </select>
-      </div>
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="api-modal">
+  <div class="api-modal">
+    <h3>Connect Claude API</h3>
+    <p>Enter your Anthropic API key to enable AI features: Ask Claude, JD scanning, and per-role drafting. Stored only in your browser's localStorage — never sent anywhere except Anthropic's API.</p>
+    <p>Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    <div class="form-field" style="margin-top:12px;">
+      <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-…">
     </div>
-    <div class="field">
-      <label class="label">Salary</label>
-      <input type="text" id="edit-salary" placeholder="e.g. £70,000-£85,000">
-    </div>
-    <div class="field">
-      <label class="label">Notes / comms log</label>
-      <textarea id="edit-notes" rows="4" placeholder="Notes, interview feedback, comms..."></textarea>
-    </div>
+    <p class="api-note">Your key is stored locally on this device only. Clear it anytime by clicking the status button.</p>
     <div class="modal-actions">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEdit()">Save</button>
+      <button class="btn" onclick="closeApiModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
     </div>
   </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx" id="ctx-menu">
+  <div class="ctx-item" onclick="ctxMarkApplied()">Mark as applied</div>
+  <div class="ctx-item" onclick="ctxOpenAI()">Ask Claude about this role</div>
+  <div class="ctx-item danger" onclick="ctxDelete()">Remove</div>
 </div>
 
 <script>
 const STORAGE_KEY = 'brynne_job_hub_v2';
+const API_KEY_KEY = 'brynne_anthropic_key';
 let roles = [];
-let editingId = null;
 let currentFilter = 'all';
-let currentPipeFilter = null;
+let currentSort = { key: 'company', dir: 1 };
+let aiOpen = false;
+let aiContext = null; // null = general, or role object
+let ctxRoleId = null;
 
+// ── PROFILE CONTEXT ──
+const BRYNNE_CONTEXT = `You are helping Brynne Inglish manage her job search. Here is her full context:
+
+BACKGROUND: Product operations professional, 7+ years experience. Based in London. Out of work since early February 2026. Degree in Physiology (University of Arizona 2013).
+
+CV SUMMARY:
+- Agile Product Owner at HOPCo (2023-2026): Built product ops from scratch post-acquisition. Led ops for 30-dev multi-squad engineering group. Designed stakeholder intake process with Jira gates. Sprint metrics automation with CTO. Coordinated release readiness. Designed CS data export request system. CSPO certified.
+- Project Manager at msk.ai (2018-2022): Built implementation function from scratch. Hired/managed remote India team. 85% defect reduction, 90% on-time delivery. Transitioned Jira to Monday.com. Medical student intern cohort programme.
+- Earlier: Marketing & Ops Manager at DeluxeMaid; Operations Coordinator at University of Arizona (managed 40 TAs, LMS for 3000+ students).
+
+TARGET ROLES: Senior Product Operations Manager, Product Operations Lead, Operations Lead. NOT: pure PM, delivery-only, Scrum Master.
+SALARY: Floor £65k, Target £70k-£85k, Stretch £85k-£95k.
+LOCATION: London only / UK remote. No relocation.
+DOMAIN: Open. Healthtech strongest. Manageable: fintech, SaaS. Hard filter: crypto, AV/robotics, legal tech.
+
+KEY GAPS: No "Product Operations" title on CV (biggest ATS problem). No Looker/SQL. No P&L. No fintech domain.
+
+KEY STRENGTHS: Systems thinking, 0-1 builds, cross-functional influence without authority, regulated environments, remote team management, delivery governance.
+
+STYLE: Direct, prefers honest feedback over validation. No em dashes in any written content.`;
+
+// ── DATA ──
 const INITIAL_ROLES = [
-  { id: 1, company: 'Monzo', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'apply', salary: '£70,000-£90,000', notes: 'CV screen rejection under 24 hours. Applied 21 April. Strong fit on paper, title gap likely caused screen failure.' },
-  { id: 2, company: 'GoodHabitz', title: 'Product Operations Lead', status: 'rejected', verdict: 'apply', salary: '', notes: 'CV screen rejection. Applied 22 April. Best work type match reviewed. Greenfield mandate.' },
-  { id: 3, company: 'Sword Health', title: 'Product Operations Lead', status: 'applied', verdict: 'consider', salary: '€56k-€120k', notes: 'Applied 20 April. No response. Below level but passable screen.' },
-  { id: 4, company: 'Preply', title: 'Senior Product Strategy & Operations Manager', status: 'applied', verdict: 'apply', salary: '', notes: 'Applied 28 April. No response. Strong fit — first hire mandate, CPO reporting line.' },
-  { id: 5, company: 'Bloom', title: 'Operational Lead, Systems & Delivery', status: 'applied', verdict: 'apply', salary: '', notes: 'Applied 14 May. No response. Strong fit. Submitted with 5 detailed application answers.' },
-  { id: 6, company: 'Unnamed FinTech', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '', notes: 'Applied. No response. Wallet/Business UK launch. Greenfield mandate, regulated environment.' },
-  { id: 7, company: 'Yonda', title: 'Operations Lead', status: 'rejected', verdict: 'consider', salary: '£60k-£75k', notes: 'Applied. Screening call 30 April. Chased twice. Rejection received 30 May. Feedback: role required hands-on automation building. Recruiter (Abbie) validated product ops strengths, will be in touch for future roles.' },
-  { id: 8, company: 'Amex via CBTS', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '£40-50/hr inside IR35', notes: 'Applied 19 May. Contract role. Viewed on LinkedIn, no movement. Follow-up sent.' },
-  { id: 9, company: 'Curinos', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '£70,000', notes: 'Applied 12 May. No response. Lower priority. Process design work, financial services domain.' },
-  { id: 10, company: 'Sedgwick', title: 'Senior Product Operations Analyst', status: 'applied', verdict: 'consider', salary: '£70,000', notes: 'Applied 28 May. No response. Process design mandate. Insurance domain.' },
-  { id: 11, company: 'Joko', title: 'Product Operations Lead', status: 'evaluating', verdict: 'apply', salary: '', notes: 'Strong fit. Founding mandate, COO reporting line. Paris HQ, remote friendly. Apply ASAP.' },
-  { id: 12, company: '9fin', title: 'Lead Technical Program Manager', status: 'evaluating', verdict: 'consider', salary: '', notes: 'Delivery-heavy but top-of-market comp. Cross-functional scope real.' },
-  { id: 13, company: 'Spacelift', title: 'Product Operations Manager', status: 'evaluating', verdict: 'skip', salary: '', notes: 'SQL fluency required as core skill. DevOps domain. Skip unless SQL experience exists.' },
-  { id: 14, company: 'Camunda', title: 'Senior Technical Productivity Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied. Rejection received.' },
-  { id: 15, company: 'SoSafe', title: 'Staff Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied. Rejection received.' },
-  { id: 16, company: 'SmartRecruiters', title: 'Senior/Lead Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 25 March. Rejection received.' },
-  { id: 17, company: 'Customer.io', title: 'Technical Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied. Rejection received.' },
-  { id: 18, company: 'Latent Labs', title: 'Technical Programme Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 02 March. Initial video call 05 March 14:30. Got to first conversation stage. Rejection received.' },
-  { id: 19, company: 'Pearson', title: 'Lead Specialist, Product Management', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 09 March. Rejection received.' },
-  { id: 20, company: 'Artificial Labs', title: 'Product Operations Lead', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 12 March. Informal chat 18 March 10:30. Got to first conversation stage. Rejection received.' },
-  { id: 21, company: 'Planet', title: 'Technical Programme Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 17 March. Rejection received.' },
-  { id: 22, company: 'Primer', title: 'Product Ops Manager (Accept team)', status: 'applied', verdict: 'consider', salary: '', notes: 'Applied 18 March. No response.' },
-  { id: 23, company: 'Basecamp Research', title: 'Technical Programme Manager', status: 'applied', verdict: 'consider', salary: '', notes: 'Applied 24 March. No response.' },
-  { id: 24, company: 'Bentley Systems', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 25 March. Rejection received.' },
-  { id: 25, company: 'ClickHouse', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 27 March. Rejection received.' },
-  { id: 26, company: 'Smartcat', title: 'Product Operations Lead', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 31 March. Rejection received.' },
-  { id: 27, company: 'Zen Educate', title: 'Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 02 April. Video call 15 April 11:30. Got to first conversation stage. Rejection received.' },
-  { id: 28, company: 'Contenful', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 14 April. Rejection received.' },
-  { id: 29, company: 'Confidential Careers', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '', notes: 'Applied 28 April. No response. Recruiter on LinkedIn.' },
-  { id: 30, company: 'SmartRecruiters', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', notes: 'Applied 28 May. Rejection received.' },
-  { id: 31, company: 'LSEG', title: 'Senior Manager, Product-Led Tooling', status: 'skipped', verdict: 'skip', salary: '', notes: 'Technical tooling depth gap. Not applied.' },
-  { id: 32, company: 'Applied Computing', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. Jira admin only. Not applied.' },
-  { id: 33, company: 'Wayve', title: 'Technical Operations', status: 'skipped', verdict: 'skip', salary: '', notes: 'Hard AV/robotics domain filter. Not applied.' },
-  { id: 34, company: 'Siemens Healthineers', title: 'Technical Product Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Engineering background required. Not applied.' },
-  { id: 35, company: 'LEGO', title: 'Tech Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. 60% delivery execution. Not applied.' },
-  { id: 36, company: 'Checkout.com', title: 'Head of Process Architecture', status: 'skipped', verdict: 'skip', salary: '', notes: 'Two levels above. Revisit in 3-4 years. Not applied.' },
-  { id: 37, company: 'Doccla', title: 'Technical Programme Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'HL7/FHIR technical gap. Not applied.' },
-  { id: 38, company: 'Benepass', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '$150k-$180k', notes: 'US remote only. Not applied.' },
-  { id: 39, company: 'Pion', title: 'Senior Delivery Lead', status: 'skipped', verdict: 'skip', salary: '', notes: 'Delivery governance. Wrong trajectory. Not applied.' },
-  { id: 40, company: 'Stack Overflow', title: 'Staff Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Right work type, wrong career stage. Revisit in 3-4 years.' },
-  { id: 41, company: 'Autodesk', title: 'Technical Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Engineering/SRE background required. Not applied.' },
-  { id: 42, company: 'OFX', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'L1 technical support role. Not applied.' },
-  { id: 43, company: 'Accurx', title: 'User Support Operations Manager', status: 'skipped', verdict: 'skip', salary: '£45k-£57k', notes: 'Support ops. Below comp floor. Not applied.' },
-  { id: 44, company: 'Anthropic', title: 'Programme Manager, Partner Delivery', status: 'skipped', verdict: 'skip', salary: '£160k-£215k', notes: 'Partner economics specialist. Not applied.' },
-  { id: 45, company: 'Ctrl Alt', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Below level. Full office required. Not applied.' },
-  { id: 46, company: 'Amplify Health', title: 'Product Operations Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Heavy operational execution. Asia-focused. Not applied.' },
-  { id: 47, company: 'Binagora', title: 'Technical Program Manager', status: 'skipped', verdict: 'skip', salary: '', notes: 'Argentina-based contract. Cloud/infrastructure TPM. Not applied.' },
-  { id: 48, company: 'Liberis', title: 'Product Operations Associate', status: 'skipped', verdict: 'skip', salary: '', notes: 'Junior/entry level. Not applied.' },
-  { id: 49, company: 'Solum Health', title: 'Product Operations', status: 'skipped', verdict: 'skip', salary: '', notes: 'US-based. Requires coding/building skills. Not applied.' },
+  { id: 1, company: 'Monzo', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'apply', salary: '£70,000-£90,000', dateApplied: '2026-04-21', notes: 'CV screen rejection under 24 hours. Strong fit on paper, title gap likely caused screen failure.' },
+  { id: 2, company: 'GoodHabitz', title: 'Product Operations Lead', status: 'rejected', verdict: 'apply', salary: '', dateApplied: '2026-04-22', notes: 'CV screen rejection. Greenfield mandate.' },
+  { id: 3, company: 'Sword Health', title: 'Product Operations Lead', status: 'applied', verdict: 'consider', salary: '€56k-€120k', dateApplied: '2026-04-20', notes: 'No response. Below level but passable screen.' },
+  { id: 4, company: 'Preply', title: 'Senior Product Strategy & Operations Manager', status: 'applied', verdict: 'apply', salary: '', dateApplied: '2026-04-28', notes: 'No response. Strong fit — first hire mandate, CPO reporting line.' },
+  { id: 5, company: 'Bloom', title: 'Operational Lead, Systems & Delivery', status: 'applied', verdict: 'apply', salary: '', dateApplied: '2026-05-14', notes: 'No response. Strong fit. 5 detailed application answers submitted.' },
+  { id: 6, company: 'Unnamed FinTech', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '', dateApplied: '', notes: 'No response. Wallet/Business UK launch. Greenfield mandate.' },
+  { id: 7, company: 'Yonda', title: 'Operations Lead', status: 'rejected', verdict: 'consider', salary: '£60k-£75k', dateApplied: '2026-04-28', notes: 'Screening call 30 April. Rejected 30 May. Feedback: role required hands-on automation building. Recruiter (Abbie) validated product ops strengths.' },
+  { id: 8, company: 'Amex via CBTS', title: 'Product Operations Manager', status: 'applied', verdict: 'apply', salary: '£40-50/hr IR35', dateApplied: '2026-05-19', notes: 'Contract role. Follow-up sent. Viewed on LinkedIn, no movement.' },
+  { id: 9, company: 'Curinos', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '£70,000', dateApplied: '2026-05-12', notes: 'No response. Financial services domain. Lower priority.' },
+  { id: 10, company: 'Sedgwick', title: 'Senior Product Operations Analyst', status: 'applied', verdict: 'consider', salary: '£70,000', dateApplied: '2026-05-28', notes: 'No response. Insurance domain. Process design mandate.' },
+  { id: 11, company: 'Joko', title: 'Product Operations Lead', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'Strong fit. Founding mandate, COO reporting line. Paris HQ, remote friendly. Apply ASAP.' },
+  { id: 12, company: 'OpenFX', title: 'Product Operations Manager', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'Strong fit. AI tooling gap to address in application.' },
+  { id: 13, company: 'Scarlet', title: 'Dynamic Resource Operations', status: 'evaluating', verdict: 'apply', salary: '', dateApplied: '', notes: 'People ops pivot. Strong experiential match from UofA and msk.ai cohort work. CV reframed.' },
+  { id: 14, company: 'Camunda', title: 'Senior Technical Productivity Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '', notes: 'Rejected.' },
+  { id: 15, company: 'SoSafe', title: 'Staff Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '', notes: 'Rejected.' },
+  { id: 16, company: 'SmartRecruiters', title: 'Senior/Lead Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-25', notes: 'Rejected.' },
+  { id: 17, company: 'Customer.io', title: 'Technical Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '', notes: 'Rejected.' },
+  { id: 18, company: 'Latent Labs', title: 'Technical Programme Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-02', notes: 'Video call 05 March. Rejected.' },
+  { id: 19, company: 'Pearson', title: 'Lead Specialist, Product Management', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-09', notes: 'Rejected.' },
+  { id: 20, company: 'Artificial Labs', title: 'Product Operations Lead', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-12', notes: 'Informal chat 18 March. Rejected.' },
+  { id: 21, company: 'Planet', title: 'Technical Programme Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-17', notes: 'Rejected.' },
+  { id: 22, company: 'Primer', title: 'Product Ops Manager (Accept team)', status: 'applied', verdict: 'consider', salary: '', dateApplied: '2026-03-18', notes: 'No response.' },
+  { id: 23, company: 'Basecamp Research', title: 'Technical Programme Manager', status: 'applied', verdict: 'consider', salary: '', dateApplied: '2026-03-24', notes: 'No response.' },
+  { id: 24, company: 'Bentley Systems', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-25', notes: 'Rejected.' },
+  { id: 25, company: 'ClickHouse', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-27', notes: 'Rejected.' },
+  { id: 26, company: 'Smartcat', title: 'Product Operations Lead', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-03-31', notes: 'Rejected.' },
+  { id: 27, company: 'Zen Educate', title: 'Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-04-02', notes: 'Video call 15 April. Rejected.' },
+  { id: 28, company: 'Contentful', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-04-14', notes: 'Rejected.' },
+  { id: 29, company: 'Confidential Careers', title: 'Product Operations Manager', status: 'applied', verdict: 'consider', salary: '', dateApplied: '2026-04-28', notes: 'Recruiter on LinkedIn. No response.' },
+  { id: 30, company: 'SmartRecruiters', title: 'Senior Product Operations Manager', status: 'rejected', verdict: 'skip', salary: '', dateApplied: '2026-05-28', notes: 'Rejected.' },
 ];
+
+// Date lookup for migration — patches existing localStorage roles that are missing dateApplied
+const DATE_PATCH = {
+  'Monzo': '2026-04-21', 'GoodHabitz': '2026-04-22', 'Sword Health': '2026-04-20',
+  'Preply': '2026-04-28', 'Bloom': '2026-05-14', 'Yonda': '2026-04-28',
+  'Amex via CBTS': '2026-05-19', 'Curinos': '2026-05-12', 'Sedgwick': '2026-05-28',
+  'Latent Labs': '2026-03-02', 'Pearson': '2026-03-09', 'Artificial Labs': '2026-03-12',
+  'Planet': '2026-03-17', 'Primer': '2026-03-18', 'Basecamp Research': '2026-03-24',
+  'Bentley Systems': '2026-03-25', 'ClickHouse': '2026-03-27', 'Smartcat': '2026-03-31',
+  'Zen Educate': '2026-04-02', 'Contentful': '2026-04-14', 'Confidential Careers': '2026-04-28',
+  'SmartRecruiters': '2026-03-25',
+};
 
 function loadRoles() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) { roles = JSON.parse(saved); }
-    else { roles = INITIAL_ROLES; saveRoles(); }
-  } catch(e) { roles = INITIAL_ROLES; saveRoles(); }
+    if (saved) {
+      roles = JSON.parse(saved);
+      // Migration: patch in dateApplied for roles missing it
+      let patched = false;
+      roles.forEach(r => {
+        if (!r.dateApplied && DATE_PATCH[r.company]) {
+          r.dateApplied = DATE_PATCH[r.company];
+          patched = true;
+        }
+      });
+      if (patched) saveRoles();
+    } else {
+      roles = [...INITIAL_ROLES];
+      saveRoles();
+    }
+  } catch(e) { roles = [...INITIAL_ROLES]; }
   renderAll();
+  checkApiKey();
 }
 
 function saveRoles() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
-    const el = document.getElementById('last-saved');
-    if (el) el.textContent = 'Saved ' + new Date().toLocaleTimeString();
-  } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(roles)); } catch(e) {}
 }
 
 function renderAll() {
   renderOverview();
   renderTracker();
-  renderComparison();
+  updateHeaderStats();
 }
 
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+// ── NAVIGATION ──
+function switchPanel(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
   btn.classList.add('active');
 }
 
-// STATUS HELPERS
-const APPLIED_STATUSES = ['applied','screening','interviewing','offer'];
-const ACTIVE_STATUSES = ['screening','interviewing'];
-
-function isWaiting(r) { return r.status === 'applied'; }
-function isActive(r) { return ACTIVE_STATUSES.includes(r.status); }
-function isRejected(r) { return r.status === 'rejected'; }
-function isGhosted(r) { return r.status === 'ghosted'; }
-function hasApplied(r) { return APPLIED_STATUSES.includes(r.status) || isRejected(r) || isGhosted(r); }
-
-function getStatusBadge(status) {
-  const map = { applied: 'Waiting', rejected: 'Rejected', screening: 'Screening', interviewing: 'Interviewing', offer: 'Offer!', ghosted: 'Ghosted', evaluating: 'Evaluating', skipped: 'Skipped' };
-  return `<span class="badge badge-${status}">${map[status] || status}</span>`;
+// ── STATS ──
+function updateHeaderStats() {
+  const waiting = roles.filter(r => r.status === 'applied').length;
+  const active = roles.filter(r => ['screening','interviewing'].includes(r.status)).length;
+  document.getElementById('header-stats').innerHTML = `<span>${waiting}</span> waiting · <span>${active}</span> active`;
 }
 
-function getVerdictBadge(v) {
-  if (!v) return '';
-  return `<span class="verdict ${v}">${v.charAt(0).toUpperCase()+v.slice(1)}</span>`;
+// ── OVERVIEW ──
+const PIPE_OPEN_STATE = {};
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
 }
 
-// OVERVIEW
+function daysChip(n) {
+  if (n === null) return '';
+  const cls = n < 14 ? 'fresh' : n < 28 ? 'medium' : 'stale';
+  return `<span class="pipe-days ${cls}">${n}d</span>`;
+}
+
 function renderOverview() {
-  const waiting = roles.filter(isWaiting);
-  const active = roles.filter(isActive);
-  const rejected = roles.filter(isRejected);
-  const ghosted = roles.filter(isGhosted);
-  const toApply = roles.filter(r => r.verdict === 'apply' && !hasApplied(r) && r.status !== 'skipped');
-  const offers = roles.filter(r => r.status === 'offer');
+  const waiting = roles.filter(r => r.status === 'applied');
+  const active = roles.filter(r => ['screening','interviewing'].includes(r.status));
+  const rejected = roles.filter(r => r.status === 'rejected');
+  const toApply = roles.filter(r => r.verdict === 'apply' && !['applied','screening','interviewing','offer','rejected','ghosted'].includes(r.status) && r.status !== 'skipped');
+  const total = roles.filter(r => !['skipped','evaluating'].includes(r.status)).length;
 
-  // Action banner
-  const banner = document.getElementById('action-banner');
-  if (toApply.length > 0) {
-    banner.innerHTML = `
-      <div class="action-banner">
-        <h3>⚡ Action required — ${toApply.length} role${toApply.length>1?'s':''} to apply for</h3>
-        ${toApply.map(r => `
-          <div class="action-item">
-            <div>
-              <div class="action-item-left">${r.title}</div>
-              <div class="action-item-company">${r.company}${r.salary ? ' · '+r.salary : ''}</div>
-            </div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              ${r.notes ? `<span style="font-size:11px;color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.notes.slice(0,60)}${r.notes.length>60?'…':''}</span>` : ''}
-              <button class="btn btn-sm btn-primary" onclick="markApplied(${r.id})">Mark applied</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>`;
+  document.getElementById('stats-row').innerHTML = [
+    { label: 'To Apply', num: toApply.length, color: '#D4900A', key: 'toapply' },
+    { label: 'Waiting', num: waiting.length, color: 'var(--blue)', key: 'waiting' },
+    { label: 'Active', num: active.length, color: 'var(--green)', key: 'active' },
+    { label: 'Rejected', num: rejected.length, color: 'var(--red)', key: 'rejected' },
+    { label: 'Total Applied', num: total, color: 'var(--text-3)', key: null },
+  ].map(s => `<div class="stat-card${s.key ? '' : ' total-card'}" ${s.key ? `onclick="scrollToPipe('${s.key}')"` : ''}>
+    <div class="stat-num" style="color:${s.color}">${s.num}</div>
+    <div class="stat-label">${s.label}</div>
+  </div>`).join('');
+
+  // Action needed
+  const actionSec = document.getElementById('action-section');
+  if (toApply.length) {
+    actionSec.innerHTML = `<div class="section-head">Action needed</div>
+    <div class="action-cards">${toApply.map(r => `
+      <div class="action-card">
+        <div class="action-card-info">
+          <div class="action-card-title">${r.title}</div>
+          <div class="action-card-sub">${r.company}${r.salary ? ' · ' + r.salary : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="act-btn ai" onclick="openAIForRole(${r.id})">✦ Draft</button>
+          <button class="act-btn" onclick="markApplied(${r.id})">Mark applied</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
   } else {
-    banner.innerHTML = '';
+    actionSec.innerHTML = '';
   }
 
-  // Pipeline
-  const pipeline = document.getElementById('pipeline');
-  const pipeData = [
-    { label: 'To Apply', count: toApply.length, filter: '_toapply', dot: 'dot-all' },
-    { label: 'Waiting', count: waiting.length, filter: 'applied', dot: 'dot-waiting' },
-    { label: 'Active', count: active.length, filter: '_active', dot: 'dot-active' },
-    { label: 'Rejected', count: rejected.length, filter: 'rejected', dot: 'dot-rejected' },
-    { label: 'Ghosted', count: ghosted.length, filter: 'ghosted', dot: 'dot-ghosted' },
+  // Pipeline sections
+  const pipeSections = [
+    { key: 'waiting', label: 'Waiting for response', color: 'var(--blue)', roles: waiting },
+    { key: 'active', label: 'Active conversations', color: 'var(--green)', roles: active },
+    { key: 'rejected', label: 'Rejected', color: 'var(--red)', roles: rejected },
   ];
-  pipeline.innerHTML = pipeData.map(p => `
-    <div class="pipe-card ${currentPipeFilter === p.filter ? 'active' : ''}" onclick="setPipeFilter('${p.filter}')">
-      <div class="pipe-dot ${p.dot}"></div>
-      <div class="pipe-num">${p.count}</div>
-      <div class="pipe-label">${p.label}</div>
-    </div>
-  `).join('');
 
-  // Overview list
-  let filtered;
-  if (!currentPipeFilter) {
-    filtered = roles.filter(r => !['skipped'].includes(r.status) && r.status !== 'evaluating' || isActive(r) || isWaiting(r) || isRejected(r) || isGhosted(r));
-    filtered = roles.filter(r => r.status !== 'skipped');
-  } else if (currentPipeFilter === '_toapply') {
-    filtered = toApply;
-  } else if (currentPipeFilter === '_active') {
-    filtered = active;
-  } else {
-    filtered = roles.filter(r => r.status === currentPipeFilter);
-  }
-
-  const list = document.getElementById('overview-list');
-  if (!filtered.length) { list.innerHTML = '<div class="empty">Nothing here.</div>'; return; }
-  list.innerHTML = filtered.map(r => renderCard(r)).join('');
+  document.getElementById('pipeline-section').innerHTML = `
+    <div class="section-head">Live pipeline</div>
+    <div class="pipeline-sections">
+      ${pipeSections.map(sec => {
+        const isOpen = PIPE_OPEN_STATE[sec.key] !== false; // default open
+        return `<div class="pipe-section${isOpen ? ' open' : ''}" id="pipe-sec-${sec.key}">
+          <div class="pipe-section-header" onclick="togglePipeSection('${sec.key}')">
+            <div style="width:8px;height:8px;border-radius:50%;background:${sec.color};flex-shrink:0;"></div>
+            <div class="pipe-section-title">${sec.label}</div>
+            <div class="pipe-section-count">${sec.roles.length} role${sec.roles.length !== 1 ? 's' : ''}</div>
+            <div class="pipe-section-chevron">▼</div>
+          </div>
+          <div class="pipe-section-body">
+            ${sec.roles.length === 0
+              ? `<div style="padding:12px 16px;font-size:12px;color:var(--text-3);">Nothing here yet.</div>`
+              : (() => {
+                  const sorted = [...sec.roles].sort((a, b) => {
+                    if (!a.dateApplied && !b.dateApplied) return 0;
+                    if (!a.dateApplied) return 1;
+                    if (!b.dateApplied) return -1;
+                    return new Date(b.dateApplied) - new Date(a.dateApplied);
+                  });
+                  return sorted.map(r => {
+                    const days = daysSince(r.dateApplied);
+                    return `<div class="pipe-role-card">
+                      <div class="pipe-role-left">
+                        <div class="pipe-role-company">${esc(r.company)}</div>
+                        <div class="pipe-role-title">${esc(r.title)}${r.salary ? ' · ' + esc(r.salary) : ''}</div>
+                        ${r.notes ? `<div style="font-size:11px;color:var(--text-3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px;">${esc(r.notes.slice(0,80))}${r.notes.length>80?'…':''}</div>` : ''}
+                      </div>
+                      <div class="pipe-role-right">
+                        <div class="pipe-date" style="text-align:right;min-width:80px;">
+                          ${r.dateApplied ? `<span class="pipe-date-applied">${formatDate(r.dateApplied)}</span>` : '<span class="pipe-date-applied" style="color:var(--text-3);">no date</span>'}
+                          ${days !== null ? daysChip(days) : ''}
+                        </div>
+                        <button class="act-btn ai" onclick="openAIForRole(${r.id})">✦ AI</button>
+                      </div>
+                    </div>`;
+                  }).join('');
+                })()
+            }
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
 }
 
-function setPipeFilter(f) {
-  currentPipeFilter = currentPipeFilter === f ? null : f;
+function togglePipeSection(key) {
+  PIPE_OPEN_STATE[key] = !document.getElementById('pipe-sec-' + key).classList.contains('open');
+  document.getElementById('pipe-sec-' + key).classList.toggle('open');
+}
+
+function scrollToPipe(key) {
+  PIPE_OPEN_STATE[key] = true;
   renderOverview();
+  setTimeout(() => {
+    const el = document.getElementById('pipe-sec-' + key);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
 }
 
-function markApplied(id) {
-  const r = roles.find(x => x.id === id);
-  if (!r) return;
-  r.status = 'applied';
-  saveRoles();
-  renderAll();
+function quickFilter(label) {
+  const map = { 'To Apply': 'evaluating', 'Waiting': 'applied', 'Active': 'screening', 'Rejected': 'rejected' };
+  const f = map[label];
+  if (f) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.filter-chip').forEach(c => {
+      if (c.textContent.toLowerCase().includes(label.toLowerCase().split(' ')[0])) c.classList.add('active');
+    });
+    switchPanel('tracker', document.querySelectorAll('.nav-btn')[1]);
+    renderTracker();
+  }
 }
 
-// TRACKER
+// ── TRACKER ──
+let editingCell = null;
+
 function renderTracker() {
-  const filtered = currentFilter === 'all' ? roles : roles.filter(r => r.status === currentFilter);
-  const list = document.getElementById('roles-list');
-  if (!filtered.length) { list.innerHTML = '<div class="empty">No roles here.</div>'; return; }
-  list.innerHTML = filtered.map(r => renderCard(r)).join('');
-}
-
-function filterRoles(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('#filter-row .btn').forEach(b => {
-    b.classList.remove('active');
-    b.style.background = '';
-    b.style.color = '';
-    b.style.borderColor = '';
+  const search = document.getElementById('search-input')?.value.toLowerCase() || '';
+  let filtered = roles.filter(r => {
+    if (currentFilter !== 'all' && r.status !== currentFilter) return false;
+    if (search && !r.company.toLowerCase().includes(search) && !r.title.toLowerCase().includes(search)) return false;
+    return true;
   });
-  btn.classList.add('active');
-  btn.style.background = 'var(--text)';
-  btn.style.color = 'white';
-  btn.style.borderColor = 'var(--text)';
-  renderTracker();
-}
 
-// COMPARISON TABLE
-function renderComparison() {
-  const tbody = document.getElementById('comp-tbody');
-  const sorted = [...roles].sort((a,b) => {
-    const order = { apply: 0, consider: 1, skip: 2, '': 3 };
-    return (order[a.verdict||''] ?? 3) - (order[b.verdict||''] ?? 3);
+  filtered.sort((a, b) => {
+    const av = (a[currentSort.key] || '').toLowerCase();
+    const bv = (b[currentSort.key] || '').toLowerCase();
+    return av < bv ? -currentSort.dir : av > bv ? currentSort.dir : 0;
   });
-  tbody.innerHTML = sorted.map(r => {
-    const applied = hasApplied(r);
-    const outcomeMap = { rejected: 'Rejected', ghosted: 'Ghosted', screening: 'Screening', interviewing: 'Interviewing', offer: 'Offer', applied: 'Waiting', skipped: '—', evaluating: 'Not yet' };
-    return `<tr>
-      <td style="font-size:13px;font-weight:normal;">${r.company}</td>
-      <td style="font-size:12px;color:var(--text2);">${r.title}</td>
-      <td>${r.verdict ? getVerdictBadge(r.verdict) : '<span style="color:var(--text3);font-size:12px;">—</span>'}</td>
-      <td>${applied ? '<span class="applied-tick">✓</span>' : '<span class="not-applied">No</span>'}</td>
-      <td><span class="badge badge-${r.status}" style="font-size:10px;">${outcomeMap[r.status] || r.status}</span></td>
+
+  const tbody = document.getElementById('roles-tbody');
+  if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No roles here.</div></td></tr>`; return; }
+
+  tbody.innerHTML = filtered.map(r => {
+    const isRejected = r.status === 'rejected';
+    const rowStyle = isRejected ? 'opacity:0.45;' : '';
+    return `
+    <tr data-id="${r.id}" oncontextmenu="showCtx(event,${r.id})" style="${rowStyle}">
+      <td><div class="cell"><span class="cell-company" ondblclick="startInlineEdit(${r.id},'company',this)">${esc(r.company)}</span></div></td>
+      <td><div class="cell cell-title" ondblclick="startInlineEdit(${r.id},'title',this)">${esc(r.title)}</div></td>
+      <td><div class="cell">${statusSelectInline(r)}</div></td>
+      <td><div class="cell">${fitSelectInline(r)}</div></td>
+      <td><div class="cell" style="flex-direction:column;align-items:flex-start;gap:2px;">
+        <span style="font-size:12px;color:var(--text-2);font-family:'Courier New',monospace;" ondblclick="startInlineEdit(${r.id},'dateApplied',this)">${r.dateApplied ? formatDate(r.dateApplied) : '<span style=\'color:var(--text-3)\'>—</span>'}</span>
+        ${daysSince(r.dateApplied) !== null ? `<span class="pipe-days ${daysSince(r.dateApplied) < 14 ? 'fresh' : daysSince(r.dateApplied) < 28 ? 'medium' : 'stale'}" style="font-size:10px;">${daysSince(r.dateApplied)}d</span>` : ''}
+      </div></td>
+      <td><div class="cell cell-salary" ondblclick="startInlineEdit(${r.id},'salary',this)">${esc(r.salary || '—')}</div></td>
+      <td><div class="cell notes-cell"><span class="cell-notes" ondblclick="startInlineEdit(${r.id},'notes',this)">${esc(r.notes || '—')}</span>${r.notes && r.notes.length > 40 ? `<div class="notes-full">${esc(r.notes)}</div>` : ''}</div></td>
+      <td><div class="cell cell-actions">
+        <button class="act-btn ai" onclick="openAIForRole(${r.id})">✦ AI</button>
+        <button class="act-btn" onclick="openCtxMenu(event,${r.id})">…</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
 
-// CARD RENDERER
-function renderCard(r) {
-  return `<div class="card">
-    <div class="card-header">
-      <div style="flex:1;min-width:0;">
-        <div class="card-title">${r.title}</div>
-        <div class="card-sub">${r.company}${r.salary ? ' · '+r.salary : ''}</div>
-      </div>
-      <div class="badges">
-        ${getStatusBadge(r.status)}
-        ${getVerdictBadge(r.verdict)}
-      </div>
-    </div>
-    ${r.notes ? `<div class="card-notes">${r.notes}</div>` : ''}
-    <div class="card-actions">
-      <button class="btn btn-sm" onclick="openEdit(${r.id})">Edit</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteRole(${r.id})">Remove</button>
-    </div>
+function statusSelectInline(r) {
+  const statuses = ['evaluating','applied','screening','interviewing','offer','rejected','ghosted','skipped'];
+  const labels = { evaluating:'Evaluating', applied:'Waiting', screening:'Screening', interviewing:'Interviewing', offer:'Offer!', rejected:'Rejected', ghosted:'Ghosted', skipped:'Skipped' };
+  return `<select class="inline-select" onchange="updateField(${r.id},'status',this.value)" style="border:none;background:transparent;padding:0;cursor:pointer;">
+    ${statuses.map(s => `<option value="${s}" ${r.status===s?'selected':''}>${labels[s]}</option>`).join('')}
+  </select>`;
+}
+
+function fitSelectInline(r) {
+  const opts = [
+    { v: '', label: '—', bg: 'transparent', color: 'var(--text-3)' },
+    { v: 'apply', label: 'Strong fit', bg: 'var(--green-bg)', color: 'var(--green)' },
+    { v: 'consider', label: 'Possible', bg: 'var(--amber-bg)', color: 'var(--amber)' },
+    { v: 'skip', label: 'Poor fit', bg: 'var(--red-bg)', color: 'var(--red)' },
+  ];
+  const current = opts.find(o => o.v === (r.verdict || '')) || opts[0];
+  return `<div style="position:relative;display:inline-block;">
+    <select class="inline-select" onchange="updateField(${r.id},'verdict',this.value);renderTracker()" 
+      style="border:none;border-radius:99px;padding:2px 8px;font-size:11px;font-weight:500;cursor:pointer;appearance:none;-webkit-appearance:none;background:${current.bg};color:${current.color};padding-right:18px;">
+      ${opts.map(o => `<option value="${o.v}" ${r.verdict===(o.v||undefined)||(!r.verdict&&o.v==='')?'selected':''}>${o.label}</option>`).join('')}
+    </select>
+    <span style="position:absolute;right:5px;top:50%;transform:translateY(-50%);font-size:8px;color:${current.color};pointer-events:none;">▾</span>
   </div>`;
 }
 
-// ADD ROLE
-function addRole() {
-  const company = document.getElementById('add-company').value.trim();
-  const title = document.getElementById('add-title').value.trim();
-  if (!company || !title) { alert('Please enter company and title.'); return; }
-  roles.unshift({ id: Date.now(), company, title, status: document.getElementById('add-status').value, salary: document.getElementById('add-salary').value.trim(), verdict: document.getElementById('add-verdict').value, notes: document.getElementById('add-notes').value.trim() });
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+function startInlineEdit(id, field, el) {
+  const r = roles.find(x => x.id === id);
+  if (!r) return;
+  const val = r[field] || '';
+  const input = document.createElement('input');
+  input.className = 'inline-input';
+  input.value = val === '—' ? '' : val;
+  input.style.width = '100%';
+  el.parentNode.replaceChild(input, el);
+  input.focus();
+  input.select();
+  const finish = () => { updateField(id, field, input.value); };
+  input.addEventListener('blur', finish);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); finish(); } if (e.key === 'Escape') renderTracker(); });
+}
+
+function updateField(id, field, value) {
+  const r = roles.find(x => x.id === id);
+  if (!r) return;
+  r[field] = value;
   saveRoles();
-  ['add-company','add-title','add-salary','add-notes'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('add-status').value = 'evaluating';
-  document.getElementById('add-verdict').value = '';
-  const c = document.getElementById('add-confirm');
-  c.style.display = 'block';
-  setTimeout(() => c.style.display = 'none', 2500);
   renderAll();
 }
 
-// EDIT
-function openEdit(id) {
-  editingId = id;
+function markApplied(id) { updateField(id, 'status', 'applied'); }
+
+function sortBy(key) {
+  if (currentSort.key === key) currentSort.dir *= -1;
+  else { currentSort.key = key; currentSort.dir = 1; }
+  renderTracker();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTracker();
+}
+
+// ── CONTEXT MENU ──
+function showCtx(e, id) {
+  e.preventDefault();
+  ctxRoleId = id;
+  openCtxMenu(e, id);
+}
+
+function openCtxMenu(e, id) {
+  e.stopPropagation();
+  ctxRoleId = id;
+  const menu = document.getElementById('ctx-menu');
+  menu.style.left = Math.min(e.clientX, window.innerWidth - 170) + 'px';
+  menu.style.top = Math.min(e.clientY, window.innerHeight - 120) + 'px';
+  menu.classList.add('open');
+}
+
+function ctxMarkApplied() { if (ctxRoleId) markApplied(ctxRoleId); closeCtx(); }
+function ctxOpenAI() { if (ctxRoleId) openAIForRole(ctxRoleId); closeCtx(); }
+function ctxDelete() { if (ctxRoleId && confirm('Remove this role?')) { roles = roles.filter(r => r.id !== ctxRoleId); saveRoles(); renderAll(); } closeCtx(); }
+function closeCtx() { document.getElementById('ctx-menu').classList.remove('open'); ctxRoleId = null; }
+document.addEventListener('click', closeCtx);
+
+// ── ADD ROLE ──
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+function saveNewRole() {
+  const company = document.getElementById('f-company').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+  if (!company || !title) { alert('Company and role title required.'); return; }
+  roles.unshift({ id: Date.now(), company, title, status: document.getElementById('f-status').value, verdict: document.getElementById('f-verdict').value, salary: document.getElementById('f-salary').value.trim(), dateApplied: document.getElementById('f-date').value, notes: document.getElementById('f-notes').value.trim() });
+  saveRoles(); renderAll(); closeAddModal();
+  ['f-company','f-title','f-salary','f-notes','f-date'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── API KEY ──
+function checkApiKey() {
+  const key = localStorage.getItem(API_KEY_KEY);
+  const btn = document.getElementById('api-status');
+  if (key) { btn.textContent = '⚡ AI connected'; btn.classList.add('connected'); }
+  else { btn.textContent = '⚡ Set API key'; btn.classList.remove('connected'); }
+}
+
+function showApiModal() {
+  const key = localStorage.getItem(API_KEY_KEY);
+  if (key) { if (confirm('Clear API key?')) { localStorage.removeItem(API_KEY_KEY); checkApiKey(); } return; }
+  document.getElementById('api-modal').classList.add('open');
+}
+
+function closeApiModal() { document.getElementById('api-modal').classList.remove('open'); }
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-')) { alert('Please enter a valid Anthropic API key starting with sk-'); return; }
+  localStorage.setItem(API_KEY_KEY, key);
+  document.getElementById('api-key-input').value = '';
+  checkApiKey(); closeApiModal();
+}
+
+// ── AI DRAWER ──
+function toggleAI() {
+  aiOpen = !aiOpen;
+  document.getElementById('ai-drawer').classList.toggle('collapsed', !aiOpen);
+}
+
+function openAIForRole(id) {
   const r = roles.find(x => x.id === id);
   if (!r) return;
-  document.getElementById('edit-modal-title').textContent = r.company + ' — ' + r.title;
-  const statuses = ['evaluating','applied','screening','interviewing','offer','rejected','ghosted','skipped'];
-  document.getElementById('edit-status').innerHTML = statuses.map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s==='applied'?'Applied (waiting)':s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('');
-  document.getElementById('edit-notes').value = r.notes || '';
-  document.getElementById('edit-verdict').value = r.verdict || '';
-  document.getElementById('edit-salary').value = r.salary || '';
-  document.getElementById('edit-modal').classList.add('open');
+  aiContext = r;
+  document.getElementById('ai-context-label').textContent = r.company;
+  if (!aiOpen) toggleAI();
+  document.getElementById('ai-input').placeholder = `Ask about ${r.company}…`;
+  document.getElementById('ai-input').focus();
+  updateQuickButtons(r);
 }
 
-function closeModal() { document.getElementById('edit-modal').classList.remove('open'); editingId = null; }
-
-function saveEdit() {
-  const r = roles.find(x => x.id === editingId);
-  if (!r) return;
-  r.status = document.getElementById('edit-status').value;
-  r.notes = document.getElementById('edit-notes').value;
-  r.verdict = document.getElementById('edit-verdict').value;
-  r.salary = document.getElementById('edit-salary').value;
-  saveRoles(); closeModal(); renderAll();
+function updateQuickButtons(r) {
+  const quick = document.getElementById('ai-quick');
+  if (r) {
+    quick.innerHTML = `
+      <button class="ai-quick-btn" onclick="sendQuick('Draft a cover letter for ${r.company}')">Draft cover letter</button>
+      <button class="ai-quick-btn" onclick="sendQuick('What application angle should I take for ${r.company}?')">Application angle</button>
+      <button class="ai-quick-btn" onclick="sendQuick('What gaps should I address for ${r.company}?')">Flag gaps</button>
+      <button class="ai-quick-btn" onclick="clearRoleContext()">← Back to general</button>`;
+  } else {
+    quick.innerHTML = `
+      <button class="ai-quick-btn" onclick="sendQuick('What should I prioritise this week?')">This week</button>
+      <button class="ai-quick-btn" onclick="sendQuick('Which applications have gone quiet?')">Gone quiet</button>
+      <button class="ai-quick-btn" onclick="sendQuick('Where do I stand overall?')">Overall status</button>
+      <button class="ai-quick-btn" onclick="sendQuick('What are my strongest live applications?')">Strongest bets</button>`;
+  }
 }
 
-function deleteRole(id) {
-  if (!confirm('Remove this role?')) return;
-  roles = roles.filter(r => r.id !== id);
-  saveRoles(); renderAll();
+function clearRoleContext() {
+  aiContext = null;
+  document.getElementById('ai-context-label').textContent = 'General search';
+  document.getElementById('ai-input').placeholder = 'Ask anything about your search…';
+  updateQuickButtons(null);
 }
 
-// Init filter button styling
-document.addEventListener('DOMContentLoaded', () => {
-  const firstBtn = document.querySelector('#filter-row .btn');
-  if (firstBtn) { firstBtn.style.background='var(--text)'; firstBtn.style.color='white'; firstBtn.style.borderColor='var(--text)'; }
-});
+function sendQuick(text) {
+  document.getElementById('ai-input').value = text;
+  sendAIMessage();
+}
+
+function handleAIKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAIMessage(); }
+}
+
+function getRolesContext() {
+  const live = roles.filter(r => !['skipped'].includes(r.status));
+  return live.map(r => `${r.company} | ${r.title} | Status: ${r.status} | Verdict: ${r.verdict || 'none'}${r.salary ? ' | Salary: ' + r.salary : ''}${r.notes ? ' | Notes: ' + r.notes : ''}`).join('\n');
+}
+
+async function sendAIMessage() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const apiKey = localStorage.getItem(API_KEY_KEY);
+  if (!apiKey) { showApiModal(); return; }
+
+  input.value = '';
+  appendMsg('user', text);
+
+  const typingId = appendTyping();
+  document.getElementById('ai-send-btn').disabled = true;
+
+  const systemPrompt = `${BRYNNE_CONTEXT}
+
+CURRENT ROLES DATA:
+${getRolesContext()}
+
+${aiContext ? `CURRENT ROLE CONTEXT: The user is asking specifically about ${aiContext.company} — ${aiContext.title}. Status: ${aiContext.status}. Notes: ${aiContext.notes || 'none'}.` : 'The user is asking a general question about their job search.'}
+
+Be direct and practical. No em dashes. Keep responses focused and actionable. When drafting cover letters or application answers, follow Brynne's established style: punchy three-paragraph narrative, no em dashes, honest and direct tone. Always verify any specific examples used are grounded in what you know about her actual experience.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: [{ role: 'user', content: text }] })
+    });
+    const data = await res.json();
+    removeTyping(typingId);
+    if (data.content && data.content[0]) {
+      appendMsg('ai', data.content[0].text);
+    } else if (data.error) {
+      appendMsg('ai', `Error: ${data.error.message}`);
+    }
+  } catch(e) {
+    removeTyping(typingId);
+    appendMsg('ai', 'Something went wrong. Check your API key and try again.');
+  }
+
+  document.getElementById('ai-send-btn').disabled = false;
+}
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+  if (role === 'ai') {
+    div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>').replace(/- (.*?)(<br>|$)/g, '<li>$1</li>');
+  } else {
+    div.textContent = text;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('ai-messages');
+  const id = 'typing-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+  div.id = id;
+  div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// ── JD SCANNER ──
+async function scanJD() {
+  const jd = document.getElementById('jd-input').value.trim();
+  if (!jd) { alert('Please paste a job description.'); return; }
+
+  const apiKey = localStorage.getItem(API_KEY_KEY);
+  if (!apiKey) { showApiModal(); return; }
+
+  const result = document.getElementById('scan-result');
+  const body = document.getElementById('scan-body');
+  const verdictRow = document.getElementById('scan-verdict-row');
+  result.className = 'scan-result show';
+  verdictRow.innerHTML = '<span style="color:var(--text-3);font-size:13px;">Evaluating…</span>';
+  body.textContent = '';
+
+  const prompt = `${BRYNNE_CONTEXT}
+
+Evaluate the following job description for Brynne. Give a structured response with:
+1. VERDICT: Apply / Consider / Skip (and one sentence why)
+2. WORK TYPE FIT: Is this systems/operating model work or delivery execution?
+3. LEVEL FIT: Does it match Senior IC target? Any red flags?
+4. DOMAIN: Any hard filters triggered?
+5. COMP: Is salary mentioned and does it meet the floor?
+6. KEY GAPS: What gaps does Brynne have for this specific role?
+7. APPLICATION ANGLE: If applying, what's the strongest angle to lead with?
+8. RISKS: What might cause a screen failure?
+
+Be direct. No em dashes. No fluff.
+
+JOB DESCRIPTION:
+${jd}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: 'You are a job search advisor. Be direct and structured.', messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.content && data.content[0]) {
+      const text = data.content[0].text;
+      const verdictMatch = text.match(/VERDICT:\s*(Apply|Consider|Skip)/i);
+      const verdict = verdictMatch ? verdictMatch[1].toLowerCase() : 'consider';
+      const vColors = { apply: ['var(--green-bg)','var(--green)'], consider: ['var(--amber-bg)','var(--amber)'], skip: ['var(--red-bg)','var(--red)'] };
+      const [vbg, vc] = vColors[verdict] || vColors.consider;
+      verdictRow.innerHTML = `<span class="scan-verdict-badge badge" style="background:${vbg};color:${vc};">${verdict.charAt(0).toUpperCase()+verdict.slice(1)}</span>`;
+      body.textContent = text;
+    } else {
+      body.textContent = 'Error: ' + (data.error?.message || 'Unknown error');
+    }
+  } catch(e) {
+    body.textContent = 'Something went wrong. Check your API key.';
+  }
+}
+
+// ── HELPERS ──
+function statusBadge(s) {
+  const map = { applied:'Waiting', rejected:'Rejected', screening:'Screening', interviewing:'Interviewing', offer:'Offer!', ghosted:'Ghosted', evaluating:'Evaluating', skipped:'Skipped' };
+  return `<span class="badge b-${s}">${map[s]||s}</span>`;
+}
+function verdictBadge(v) {
+  if (!v) return '';
+  return `<span class="badge v-${v}">${v.charAt(0).toUpperCase()+v.slice(1)}</span>`;
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 loadRoles();
 </script>
