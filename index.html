@@ -409,13 +409,13 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 <!-- API KEY MODAL -->
 <div class="modal-overlay" id="api-modal">
   <div class="api-modal">
-    <h3>Connect Claude API</h3>
-    <p>Enter your Anthropic API key to enable AI features: Ask Claude, JD scanning, and per-role drafting. Stored only in your browser's localStorage — never sent anywhere except Anthropic's API.</p>
-    <p>Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    <h3>Connect AI (free)</h3>
+    <p>Enter your free Gemini API key to enable AI features: Ask, JD scanning, and per-role drafting. No credit card needed. Stored only in your browser's localStorage.</p>
+    <p>Get a free key at <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> → sign in with Google → "Get API key" → "Create API key"</p>
     <div class="form-field" style="margin-top:12px;">
       <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-…">
     </div>
-    <p class="api-note">Your key is stored locally on this device only. Clear it anytime by clicking the status button.</p>
+    <p class="api-note">Free tier: 1,500 requests/day, no card required. Key stored locally on this device only.</p>
     <div class="modal-actions">
       <button class="btn" onclick="closeApiModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
@@ -432,7 +432,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 
 <script>
 const STORAGE_KEY = 'brynne_job_hub_v2';
-const API_KEY_KEY = 'brynne_anthropic_key';
+const API_KEY_KEY = 'brynne_gemini_key';
 let roles = [];
 let currentFilter = 'all';
 let currentSort = { key: 'company', dir: 1 };
@@ -856,7 +856,7 @@ function showApiModal() {
 function closeApiModal() { document.getElementById('api-modal').classList.remove('open'); }
 function saveApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
-  if (!key.startsWith('sk-')) { alert('Please enter a valid Anthropic API key starting with sk-'); return; }
+  if (!key) { alert('Please paste your Gemini API key.'); return; }
   localStorage.setItem(API_KEY_KEY, key);
   document.getElementById('api-key-input').value = '';
   checkApiKey(); closeApiModal();
@@ -931,27 +931,31 @@ async function sendAIMessage() {
   const typingId = appendTyping();
   document.getElementById('ai-send-btn').disabled = true;
 
-  const systemPrompt = `${BRYNNE_CONTEXT}
+  const fullPrompt = `${BRYNNE_CONTEXT}
 
 CURRENT ROLES DATA:
 ${getRolesContext()}
 
 ${aiContext ? `CURRENT ROLE CONTEXT: The user is asking specifically about ${aiContext.company} — ${aiContext.title}. Status: ${aiContext.status}. Notes: ${aiContext.notes || 'none'}.` : 'The user is asking a general question about their job search.'}
 
-Be direct and practical. No em dashes. Keep responses focused and actionable. When drafting cover letters or application answers, follow Brynne's established style: punchy three-paragraph narrative, no em dashes, honest and direct tone. Always verify any specific examples used are grounded in what you know about her actual experience.`;
+Be direct and practical. No em dashes. Keep responses focused and actionable. When drafting cover letters or application answers, follow Brynne's established style: punchy three-paragraph narrative, no em dashes, honest and direct tone. Always verify any specific examples used are grounded in what you know about her actual experience.
+
+User message: ${text}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: [{ role: 'user', content: text }] })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
     });
     const data = await res.json();
     removeTyping(typingId);
-    if (data.content && data.content[0]) {
-      appendMsg('ai', data.content[0].text);
+    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      appendMsg('ai', data.candidates[0].content.parts[0].text);
     } else if (data.error) {
       appendMsg('ai', `Error: ${data.error.message}`);
+    } else {
+      appendMsg('ai', 'No response received. Check your API key.');
     }
   } catch(e) {
     removeTyping(typingId);
@@ -1024,14 +1028,14 @@ JOB DESCRIPTION:
 ${jd}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: 'You are a job search advisor. Be direct and structured.', messages: [{ role: 'user', content: prompt }] })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
     const data = await res.json();
-    if (data.content && data.content[0]) {
-      const text = data.content[0].text;
+    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      const text = data.candidates[0].content.parts[0].text;
       const verdictMatch = text.match(/VERDICT:\s*(Apply|Consider|Skip)/i);
       const verdict = verdictMatch ? verdictMatch[1].toLowerCase() : 'consider';
       const vColors = { apply: ['var(--green-bg)','var(--green)'], consider: ['var(--amber-bg)','var(--amber)'], skip: ['var(--red-bg)','var(--red)'] };
