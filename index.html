@@ -316,10 +316,32 @@ textarea.form-input { resize: vertical; min-height: 70px; }
         </div>
         <div class="scan-result" id="scan-result">
           <div class="scan-verdict" id="scan-verdict-row"></div>
-          <div id="scan-save-bar" style="display:none;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);display:none;align-items:center;gap:10px;flex-wrap:wrap;">
-            <input id="scan-company" class="form-input" placeholder="Company name" style="width:160px;padding:5px 9px;font-size:12px;">
-            <input id="scan-title" class="form-input" placeholder="Role title" style="flex:1;min-width:180px;padding:5px 9px;font-size:12px;">
-            <button class="btn btn-primary" onclick="saveScannedRole()" style="white-space:nowrap;">+ Save to tracker</button>
+          <div id="scan-save-bar" style="display:none;">
+            <div style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Save to tracker</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                  <div style="font-size:10px;color:var(--text-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;">Company</div>
+                  <input id="scan-company" class="form-input" placeholder="Company name" style="padding:5px 9px;font-size:12px;">
+                </div>
+                <div>
+                  <div style="font-size:10px;color:var(--text-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;">Salary (if known)</div>
+                  <input id="scan-salary" class="form-input" placeholder="e.g. £70,000-£85,000" style="padding:5px 9px;font-size:12px;">
+                </div>
+              </div>
+              <div style="margin-bottom:8px;">
+                <div style="font-size:10px;color:var(--text-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;">Role title</div>
+                <input id="scan-title" class="form-input" placeholder="Role title" style="padding:5px 9px;font-size:12px;width:100%;">
+              </div>
+              <div style="margin-bottom:10px;">
+                <div style="font-size:10px;color:var(--text-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;">Note to self (optional)</div>
+                <input id="scan-note" class="form-input" placeholder="e.g. apply before Friday, strong greenfield mandate…" style="padding:5px 9px;font-size:12px;width:100%;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="saveScannedRole()" style="white-space:nowrap;">+ Save to tracker</button>
+                <span id="scan-saved-confirm" style="font-size:12px;color:var(--green);font-weight:500;display:none;">✓ Saved to tracker</span>
+              </div>
+            </div>
           </div>
           <div class="scan-body" id="scan-body"></div>
         </div>
@@ -1043,6 +1065,14 @@ EVALUATION FRAMEWORK — assess the role across all of these:
 7. MARKET REALITY CHECK: Are you realistically competitive? What candidate profile is likely beating you?
 8. FINAL RECOMMENDATION: Apply / Apply selectively / Skip — and the single most important reason.
 
+After the assessment, on a new line output exactly this block with no extra formatting:
+---EXTRACT---
+COMPANY: [company name, or blank if not found]
+TITLE: [exact job title]
+SALARY: [salary range if mentioned, or blank]
+VERDICT: [Apply|Consider|Skip]
+---END---
+
 OUTPUT FORMAT RULES:
 - Write directly to Brynne using "you" and "your"
 - No em dashes
@@ -1069,38 +1099,41 @@ OUTPUT FORMAT RULES:
     const data = await res.json();
     if (data.choices && data.choices[0]?.message?.content) {
       const text = data.choices[0].message.content;
-      lastScanText = text;
-
-      // Parse verdict
-      const verdictMatch = text.match(/FINAL RECOMMENDATION[:\s*]*(Apply selectively|Apply|Skip)/i)
-        || text.match(/QUICK VERDICT[:\s*]*(Strong fit|Stretch|Misaligned)/i);
-      let verdict = 'consider';
-      if (verdictMatch) {
-        const v = verdictMatch[1].toLowerCase();
-        if (v.includes('strong fit') || v === 'apply') verdict = 'apply';
-        else if (v.includes('selectively') || v.includes('stretch')) verdict = 'consider';
-        else if (v.includes('misaligned') || v === 'skip') verdict = 'skip';
+      // Parse structured extract block
+      const extractMatch = text.match(/---EXTRACT---([\s\S]*?)---END---/);
+      let extractedCompany = '', extractedTitle = '', extractedSalary = '', extractedVerdict = 'consider';
+      if (extractMatch) {
+        const block = extractMatch[1];
+        extractedCompany = (block.match(/COMPANY:\s*(.+)/) || [])[1]?.trim() || '';
+        extractedTitle   = (block.match(/TITLE:\s*(.+)/)   || [])[1]?.trim() || '';
+        extractedSalary  = (block.match(/SALARY:\s*(.+)/)  || [])[1]?.trim() || '';
+        const rawV       = (block.match(/VERDICT:\s*(.+)/) || [])[1]?.trim().toLowerCase() || '';
+        if (rawV === 'apply') extractedVerdict = 'apply';
+        else if (rawV === 'skip') extractedVerdict = 'skip';
+        else extractedVerdict = 'consider';
       }
-      lastScanVerdict = verdict;
+      lastScanVerdict = extractedVerdict;
 
-      // Try to extract company and role from JD text
-      const companyMatch = jd.match(/^([A-Z][A-Za-z0-9\s&.,'-]{1,40}?)\s*[\n|–|-]/m);
-      const titleMatch = jd.match(/(Senior|Lead|Head|Staff|Principal)?[\s]?(Product Operations|Product Ops|Operations|Technical Program|Programme)[^\n]{0,60}/i);
-      document.getElementById('scan-company').value = companyMatch ? companyMatch[1].trim() : '';
-      document.getElementById('scan-title').value = titleMatch ? titleMatch[0].trim() : '';
+      document.getElementById('scan-company').value = extractedCompany;
+      document.getElementById('scan-title').value = extractedTitle;
+      document.getElementById('scan-salary').value = extractedSalary;
+      document.getElementById('scan-note').value = '';
+
+      // Strip the extract block from displayed text
+      const displayText = text.replace(/---EXTRACT---[\s\S]*?---END---/, '').trim();
 
       const vColors = { apply: ['var(--green-bg)','var(--green)'], consider: ['var(--amber-bg)','var(--amber)'], skip: ['var(--red-bg)','var(--red)'] };
-      const [vbg, vc] = vColors[verdict];
-      const vLabel = { apply: 'Apply', consider: 'Apply selectively', skip: 'Skip' }[verdict];
+      const [vbg, vc] = vColors[extractedVerdict];
+      const vLabel = { apply: 'Apply', consider: 'Apply selectively', skip: 'Skip' }[extractedVerdict];
       verdictRow.innerHTML = `<span class="scan-verdict-badge badge" style="background:${vbg};color:${vc};font-size:13px;padding:5px 14px;">${vLabel}</span>`;
 
-      // Render formatted body
-      body.innerHTML = text
+      body.innerHTML = displayText
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>');
 
-      saveBar.style.display = 'flex';
+      saveBar.style.display = 'block';
+      lastScanText = displayText;
     } else {
       verdictRow.innerHTML = '';
       body.textContent = 'Error: ' + (data.error?.message || 'Unknown error');
@@ -1113,35 +1146,32 @@ OUTPUT FORMAT RULES:
 
 function saveScannedRole() {
   const company = document.getElementById('scan-company').value.trim();
-  const title = document.getElementById('scan-title').value.trim();
-  if (!company || !title) { alert('Please fill in the company and role title before saving.'); return; }
+  const title   = document.getElementById('scan-title').value.trim();
+  const salary  = document.getElementById('scan-salary').value.trim();
+  const note    = document.getElementById('scan-note').value.trim();
 
-  const verdictMap = { apply: 'apply', consider: 'consider', skip: 'skip' };
+  if (!company || !title) { alert('Please fill in at least the company and role title.'); return; }
+
+  const assessmentSnippet = lastScanText.slice(0, 300).replace(/\n/g, ' ').trim();
+  const notes = [note, assessmentSnippet ? 'Scanner: ' + assessmentSnippet + '…' : ''].filter(Boolean).join(' | ');
+
   roles.unshift({
     id: Date.now(),
     company,
     title,
     status: 'evaluating',
-    verdict: verdictMap[lastScanVerdict] || 'consider',
-    salary: '',
+    verdict: lastScanVerdict || 'consider',
+    salary,
     dateApplied: '',
-    notes: 'Added from JD scanner. ' + lastScanText.slice(0, 200).replace(/\n/g, ' ') + '…'
+    notes
   });
   saveRoles();
   renderAll();
 
-  document.getElementById('scan-save-bar').style.display = 'none';
-  const btn = document.querySelector('#scan-save-bar button');
-  if (btn) { btn.textContent = '✓ Saved'; btn.style.background = 'var(--green)'; }
-
-  // Show confirm
-  const bar = document.getElementById('scan-save-bar');
-  bar.style.display = 'flex';
-  const confirm = document.createElement('span');
+  const confirm = document.getElementById('scan-saved-confirm');
   confirm.textContent = `✓ ${company} saved to tracker`;
-  confirm.style.cssText = 'font-size:12px;color:var(--green);font-weight:500;';
-  bar.appendChild(confirm);
-  setTimeout(() => { confirm.remove(); }, 3000);
+  confirm.style.display = 'inline';
+  setTimeout(() => { confirm.style.display = 'none'; }, 3000);
 }
 
 // ── HELPERS ──
