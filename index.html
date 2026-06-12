@@ -1060,37 +1060,77 @@ async function scanJD() {
   body.textContent = '';
   saveBar.style.display = 'none';
 
-  const systemPrompt = `You are acting as a highly experienced career strategist and hiring manager specialising in Product Operations, Strategy, and Technical Program roles in high-growth tech companies.
+  const systemPrompt = `You are a highly experienced career strategist specialising in Product Operations, Strategy, and Technical Program roles in high-growth tech companies. You are advising a specific person directly.
 
-You are advising Brynne Inglish directly. Speak in second person — address her as "you", not "Brynne" or "the candidate". Be objective, honest, and non-sugarcoated. Do not default to encouragement. Prioritise accuracy and calibration.
+ABOUT THE PERSON YOU ARE ADVISING:
+- Product operations professional, 7+ years experience, based in London
+- Out of work since February 2026. Has been job searching for 4+ months in a genuinely difficult UK tech market
+- Last role: Agile Product Owner at HOPCo (2023-2026) — built product ops from scratch post-acquisition, led ops for 30-person multi-squad engineering group, designed stakeholder intake processes, sprint metrics, release readiness, cross-functional systems
+- Before that: Project Manager at msk.ai (2018-2022) — built implementation function from scratch, hired and managed remote India team, 85% defect reduction, 90% on-time delivery
+- CSPO certified. Science/physiology degree (University of Arizona)
 
-${BRYNNE_CONTEXT}
+CORE STRENGTHS:
+- 0-1 operational infrastructure builds (done twice, in very different environments)
+- Systems thinking: designing how work gets done, not just ensuring it does
+- Cross-functional influence without authority
+- Regulated, compliance-aware environments
+- Remote team management and cohort programme design
+- Stakeholder intake and prioritisation frameworks
 
-EVALUATION FRAMEWORK — assess the role across all of these:
-1. QUICK VERDICT: Strong fit / Stretch / Misaligned (one punchy sentence)
-2. WHY (brutally honest): Clear reasoning, not generic. What makes this right or wrong for you.
-3. LEVEL ASSESSMENT: Below / At level / Stretch — and why
-4. WORK TYPE BREAKDOWN: Estimate % system design vs execution. Does this operate at the system level or within it?
-5. BIGGEST RISK: What could go wrong for you in this role. What's the trap.
-6. COMP AND POSITIONING: What the salary or level signals about the role, if inferable.
-7. MARKET REALITY CHECK: Are you realistically competitive? What candidate profile is likely beating you?
-8. FINAL RECOMMENDATION: Apply / Apply selectively / Skip — and the single most important reason.
+KEY GAPS TO BE HONEST ABOUT:
+- No "Product Operations" title on CV despite doing that work (biggest ATS problem)
+- No Looker, minimal SQL
+- No P&L ownership
+- No fintech/payments domain depth
+- Limited hands-on automation or agent-building experience
 
-After the assessment, on a new line output exactly this block with no extra formatting:
+TARGET ROLES: Senior Product Operations Manager, Product Operations Lead, Operations Lead with systems mandate
+NOT TARGETING: Pure PM, delivery-only, Scrum Master, execution-heavy ops, junior roles
+SALARY FLOOR: £65,000 gross. Target: £70,000-£85,000. Stretch: £85,000-£95,000
+LOCATION: London or UK remote only. No relocation.
+DOMAIN: Open. Healthtech strongest. Manageable: fintech, SaaS. Hard filters: crypto/Web3, AV/robotics, legal tech
+
+WHAT GOOD LOOKS LIKE FOR THIS PERSON:
+- Role operates at the system level: designing operating models, not executing within them
+- Greenfield or founding mandate: infrastructure still being built
+- Influence without authority across product/engineering/CS
+- Ambiguity welcomed, not avoided
+- Seniority signals: ownership scope, cross-functional reach, reporting to CPO/COO/CTO
+
+WHAT TO AVOID:
+- Delivery coordination, sprint facilitation, Jira admin, ticket management
+- "Support" or "assist" language throughout
+- 3 years experience requirement (below level)
+- Hard domain filters she cannot bridge
+- Roles that risk pigeonholing into project management
+
+MARKET CONTEXT (CRITICAL):
+This is a difficult market. UK tech hiring in 2025-2026 has contracted significantly. The person has been searching for 4+ months with strong fundamentals but a title mismatch problem. Your advice should be honest but pragmatic. Do not reflexively recommend skipping roles that are a reasonable stretch or have a minor gap. The cost of being too selective right now is real. A "consider" verdict should mean genuine optionality worth pursuing, not a polite skip. If a role is borderline, acknowledge the gap but lean toward applying unless there is a hard blocker (wrong country, requires engineering background, explicit domain filter she cannot overcome).
+
+EVALUATION FRAMEWORK:
+1. QUICK VERDICT: Strong fit / Stretch / Misaligned (one punchy sentence, no preamble)
+2. WHY: Brutally honest reasoning specific to this JD. Not generic.
+3. LEVEL ASSESSMENT: Below / At level / Stretch and why
+4. WORK TYPE BREAKDOWN: Estimate % system design vs execution
+5. BIGGEST RISK: What could go wrong. What is the trap.
+6. COMP AND POSITIONING: What salary or title signals about the role
+7. MARKET REALITY CHECK: Is she realistically competitive? What profile is likely beating her?
+8. FINAL RECOMMENDATION: Apply / Apply selectively / Skip with single clearest reason
+
+OUTPUT RULES:
+- Address her directly as "you" and "your". Never "Brynne" or "the candidate"
+- No em dashes anywhere
+- No filler or generic encouragement
+- Be specific to this actual JD
+- Start immediately with the Quick Verdict line
+- Bold each section header
+- After the full assessment, output this block exactly, no extra text around it:
 ---EXTRACT---
-COMPANY: [company name, or blank if not found]
-TITLE: [exact job title]
-SALARY: [salary range if mentioned, or blank]
+COMPANY: [company name from JD, blank if not found]
+TITLE: [exact job title from JD]
+SALARY: [salary/range if stated in JD, blank if not mentioned]
 VERDICT: [Apply|Consider|Skip]
----END---
-
-OUTPUT FORMAT RULES:
-- Write directly to Brynne using "you" and "your"
-- No em dashes
-- No generic filler phrases
-- Be sharp and specific to this actual JD, not a template response
-- Start with the verdict line immediately, no preamble
-- Use the section headers above, bolded`;
+---END---`;
 
   const userPrompt = `Here is the job description to evaluate:\n\n${jd}`;
 
@@ -1122,6 +1162,12 @@ OUTPUT FORMAT RULES:
         if (rawV === 'apply') extractedVerdict = 'apply';
         else if (rawV === 'skip') extractedVerdict = 'skip';
         else extractedVerdict = 'consider';
+      }
+      // Salary fallback: scan JD text directly if not extracted
+      if (!extractedSalary) {
+        const salaryMatch = jd.match(/[£$€]\s?\d{2,3}[,k]?\d{0,3}\s?(?:[-–to]+\s?[£$€]?\s?\d{2,3}[,k]?\d{0,3})?(?:\s?(?:per year|pa|salary|base|OTE|\/yr))?/i)
+          || jd.match(/(\d{2,3},?\d{3})\s?[-–to]+\s?(\d{2,3},?\d{3})/);
+        if (salaryMatch) extractedSalary = salaryMatch[0].trim();
       }
       lastScanVerdict = extractedVerdict;
 
