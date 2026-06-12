@@ -342,7 +342,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
                 <input id="scan-note" class="form-input" placeholder="e.g. apply before Friday, strong greenfield mandate…" style="padding:5px 9px;font-size:12px;width:100%;">
               </div>
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <button class="btn btn-primary" onclick="saveScannedRole()" style="white-space:nowrap;">+ Save to tracker</button>
+                <button id="scan-save-btn" class="btn btn-primary" onclick="saveScannedRole()" style="white-space:nowrap;">+ Save to tracker</button>
                 <span id="scan-saved-confirm" style="font-size:12px;color:var(--green);font-weight:500;display:none;">✓ Saved to tracker</span>
               </div>
             </div>
@@ -1202,35 +1202,62 @@ VERDICT: [Apply|Consider|Skip]
   }
 }
 
-function saveScannedRole() {
-  const company = document.getElementById('scan-company').value.trim();
-  const title   = document.getElementById('scan-title').value.trim();
-  const salary  = document.getElementById('scan-salary').value.trim();
-  const note    = document.getElementById('scan-note').value.trim();
+function saveScannedRole(forceOverride = false) {
+  const company     = document.getElementById('scan-company').value.trim();
+  const title       = document.getElementById('scan-title').value.trim();
+  const salary      = document.getElementById('scan-salary').value.trim();
+  const note        = document.getElementById('scan-note').value.trim();
   const dateApplied = document.getElementById('scan-date').value;
+  const confirmEl   = document.getElementById('scan-saved-confirm');
 
   if (!company || !title) { alert('Please fill in at least the company and role title.'); return; }
+
+  // Duplicate check
+  if (!forceOverride) {
+    const duplicate = roles.find(r =>
+      r.company.toLowerCase().trim() === company.toLowerCase() &&
+      r.title.toLowerCase().trim() === title.toLowerCase()
+    );
+    if (duplicate) {
+      confirmEl.textContent = `Already in tracker as "${duplicate.status}". Save again anyway?`;
+      confirmEl.style.color = 'var(--amber)';
+      confirmEl.style.display = 'inline';
+      const saveBtn = document.getElementById('scan-save-btn');
+      saveBtn.textContent = 'Save anyway';
+      saveBtn.onclick = () => saveScannedRole(true);
+      let cancelBtn = document.getElementById('scan-dupe-cancel');
+      if (!cancelBtn) {
+        cancelBtn = document.createElement('button');
+        cancelBtn.id = 'scan-dupe-cancel';
+        cancelBtn.className = 'btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.style.cssText = 'font-size:12px;padding:4px 10px;margin-left:4px;';
+        cancelBtn.onclick = resetSaveBar;
+        saveBtn.parentNode.appendChild(cancelBtn);
+      }
+      return;
+    }
+  }
 
   const assessmentSnippet = lastScanText.slice(0, 300).replace(/\n/g, ' ').trim();
   const notes = [note, assessmentSnippet ? 'Scanner: ' + assessmentSnippet + '…' : ''].filter(Boolean).join(' | ');
 
-  roles.unshift({
-    id: Date.now(),
-    company,
-    title,
-    status: 'evaluating',
-    verdict: lastScanVerdict || 'consider',
-    salary,
-    dateApplied,
-    notes
-  });
+  roles.unshift({ id: Date.now(), company, title, status: 'evaluating', verdict: lastScanVerdict || 'consider', salary, dateApplied, notes });
   saveRoles();
   renderAll();
 
-  const confirm = document.getElementById('scan-saved-confirm');
-  confirm.textContent = `✓ ${company} saved to tracker`;
-  confirm.style.display = 'inline';
-  setTimeout(() => { confirm.style.display = 'none'; }, 3000);
+  confirmEl.textContent = `✓ ${company} saved to tracker`;
+  confirmEl.style.color = 'var(--green)';
+  confirmEl.style.display = 'inline';
+  resetSaveBar();
+  setTimeout(() => { confirmEl.style.display = 'none'; }, 3000);
+}
+
+function resetSaveBar() {
+  const saveBtn = document.getElementById('scan-save-btn');
+  if (saveBtn) { saveBtn.textContent = '+ Save to tracker'; saveBtn.onclick = () => saveScannedRole(); }
+  const cancelBtn = document.getElementById('scan-dupe-cancel');
+  if (cancelBtn) cancelBtn.remove();
 }
 
 // ── HELPERS ──
